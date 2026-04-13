@@ -26,7 +26,7 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    print("AlmaTour IS started. Database initialized.")
+    print("AlmaTour IS started. Database initialized")
     yield
 
 app = FastAPI(title="AlmaTour Information System", version="1.0.0", lifespan=lifespan)

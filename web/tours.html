@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlmaTour | Tours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tours.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21.5 3C20.1 3 18.8 3.5 17.8 4.4C17 3.5 15.8 3 14.5 3C11.5 3 9 5.5 9 8.5C9 12 11.5 14.8 14.9 17.8C15.8 18.6 16.8 19.4 17.8 20.3C18.8 19.4 19.8 18.6 20.7 17.8C24.1 14.8 26.6 12 26.6 8.5C26.5 5.5 24.3 3 21.5 3Z" fill="#2563EB"/>
+        <path d="M17.8 26C17 25.3 16.3 24.7 15.6 24.1C12 21 9 18 9 13.5C9 12.5 9.2 11.5 9.5 10.6C8 11.8 7 13.8 7 16C7 21 12 25 17.8 29C23.6 25 28.6 21 28.6 16C28.6 14.8 28.3 13.7 27.8 12.7C27.6 13 27.4 13.4 27.1 13.7C26.9 18.5 22.8 22.4 17.8 26Z" fill="#1D4ED8"/>
+      </svg>
+      <span>AlmaTour</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">CONTACT</a></li>
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="tours.html" class="active">TOUR</a></li>
+      <li><a href="#">ABOUT</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="tours.html" class="btn-book">BOOK A TOUR</a>
+      <a href="profile.html"><button class="icon-btn" aria-label="Account">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button></a>
+    </div>
+  </nav>
+
+  <main class="page-shell">
+    <section class="search-card">
+      <div class="search-copy">
+        <h1>Explore Tours in Almaty</h1>
+        <p>Find and book the best destinations around Almaty</p>
+        <span class="region-chip">Almaty region · Kazakhstan</span>
+      </div>
+      <div class="search-actions">
+        <label class="search-input">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <input type="text" placeholder="Search tours, locations">
+        </label>
+        <button class="quick-book">Quick Book</button>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <aside class="filters-card">
+        <h3>Filters</h3>
+        <div class="filter-group">
+          <div class="filter-title">Price range</div>
+          <div class="range-row"><span>15,000 ₸</span><span>35,000 ₸</span></div>
+          <input type="range" min="15000" max="35000" value="32000">
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Duration</div>
+          <label><input type="checkbox"> 1 day</label>
+          <label><input type="checkbox"> 2 days</label>
+          <label><input type="checkbox"> 3 days</label>
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Rating</div>
+          <div class="stars">★ ★ ★ ★ ★ <span>&amp; up</span></div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Type</div>
+          <label><input type="checkbox"> Nature</label>
+          <label><input type="checkbox"> Adventure</label>
+          <label><input type="checkbox"> Hiking</label>
+          <label><input type="checkbox"> City tours</label>
+        </div>
+        <div class="filter-actions">
+          <button class="apply-btn">Apply</button>
+          <button class="reset-btn" type="button">Reset</button>
+        </div>
+      </aside>
+
+      <section class="tours-panel">
+        <div class="tour-grid">
+          <article class="tour-card">
+            <img src="assets/kolsay.jpg" alt="Kolsay Lake">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>9 hours · Day trip</span><span class="badge">Nature</span></div>
+              <h3>Kolsay Lake</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.8 (3,624)</span></div><small>Spots left: 5</small></div><div class="tour-price">From <strong>25,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=kolsay" class="details-btn">View Details</a>
+            </div>
+          </article>
+          <article class="tour-card">
+            <img src="assests/shymb.jpg" alt="Shymbulak Mountain Resort">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>Half day</span><span class="badge">Nature</span></div>
+              <h3>Shymbulak Resort</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.8 (4,564)</span></div><small>Spots left: 3</small></div><div class="tour-price">From <strong>30,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=shymbulak" class="details-btn">View Details</a>
+            </div>
+          </article>
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80" alt="Charyn Canyon">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>8 hours · Day trip</span><span class="badge">Adventure</span></div>
+              <h3>Charyn Canyon</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.8 (2,897)</span></div><small>Spots left: 7</small></div><div class="tour-price">From <strong>20,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=charyn" class="details-btn">View Details</a>
+            </div>
+          </article>
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80" alt="Kaindy Lake">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>9 hours · Day trip</span><span class="badge">Nature</span></div>
+              <h3>Kaindy Lake</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.7 (2,724)</span></div><small>Spots left: 9</small></div><div class="tour-price">From <strong>20,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=kaindy" class="details-btn">View Details</a>
+            </div>
+          </article>
+          <article class="tour-card">
+            <img src="assests/medeu.jpg" alt="Medeu Ice Rink">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>6 hours · Day trip</span><span class="badge">Adventure</span></div>
+              <h3>Medeu Ice Rink</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.3 (534)</span></div><small>Spots left: 2</small></div><div class="tour-price">From <strong>25,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=medeu" class="details-btn">View Details</a>
+            </div>
+          </article>
+          <article class="tour-card">
+            <img src="assests/kok-tobe.jpg" alt="Kok-Tobe Hill">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>4 hours · Day trip</span><span class="badge">City tours</span></div>
+              <h3>Kok-Tobe Hill</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.8 (2,364)</span></div><small>Spots left: 8</small></div><div class="tour-price">From <strong>18,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=koktobe" class="details-btn">View Details</a>
+            </div>
+          </article>
+
+           <article class="tour-card">
+            <img src="assests/ayusai.jpg" alt="Ayusai Waterfall">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>5 hours · Half day</span><span class="badge">Nature</span></div>
+              <h3>Ayusai Waterfall</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.6 (1,120)</span></div><small>Spots left: 6</small></div><div class="tour-price">From <strong>15,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=ayusai" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80" alt="Kok Zhailau Plateau">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>6 hours · Day trip</span><span class="badge">Nature</span></div>
+              <h3>Kok Zhailau Plateau</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★★ <span>4.9 (3,210)</span></div><small>Spots left: 8</small></div><div class="tour-price">From <strong>18,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=kokzhailau" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&q=80" alt="Alma-Arasan Gorge">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>4 hours · Half day</span><span class="badge">Nature</span></div>
+              <h3>Alma-Arasan Gorge</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.5 (876)</span></div><small>Spots left: 10</small></div><div class="tour-price">From <strong>12,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=almaarasan" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=800&q=80" alt="Terrenkur Trail">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>3 hours · Half day</span><span class="badge">City tours</span></div>
+              <h3>Terrenkur Trail</h3>
+              <p>Almaty, Medeu district</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.7 (1,540)</span></div><small>Spots left: 12</small></div><div class="tour-price">From <strong>10,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=terrenkur" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&q=80" alt="Assy Plateau">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>10 hours · Day trip</span><span class="badge">Adventure</span></div>
+              <h3>Assy Plateau</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.8 (1,876)</span></div><small>Spots left: 4</small></div><div class="tour-price">From <strong>28,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=assy" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?w=800&q=80" alt="Turgen Waterfalls">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>8 hours · Day trip</span><span class="badge">Nature</span></div>
+              <h3>Turgen Waterfalls</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.7 (2,105)</span></div><small>Spots left: 7</small></div><div class="tour-price">From <strong>22,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=turgen" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" alt="Bartogay Reservoir">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>9 hours · Day trip</span><span class="badge">Nature</span></div>
+              <h3>Bartogay Reservoir</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.6 (934)</span></div><small>Spots left: 9</small></div><div class="tour-price">From <strong>20,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=bartogay" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="https://images.unsplash.com/photo-1478827217976-7214a0556393?w=800&q=80" alt="Issyk Lake">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>7 hours · Day trip</span><span class="badge">Nature</span></div>
+              <h3>Issyk Lake</h3>
+              <p>Almaty region</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.5 (1,688)</span></div><small>Spots left: 6</small></div><div class="tour-price">From <strong>17,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=issyk" class="details-btn">View Details</a>
+            </div>
+          </article>
+ 
+          <article class="tour-card">
+            <img src="assests/panfilov-park.jpg" alt="Panfilov Park">
+            <div class="tour-content">
+              <div class="tour-meta-top"><span>3 hours · Half day</span><span class="badge">City tours</span></div>
+              <h3>Panfilov Park</h3>
+              <p>Almaty City Center</p>
+              <div class="tour-bottom"><div><div class="tour-rating">★★★★☆ <span>4.6 (2,230)</span></div><small>Spots left: 15</small></div><div class="tour-price">From <strong>8,000 ₸</strong></div></div>
+              <a href="tour_detail.html?tour=panfilov" class="details-btn">View Details</a>
+            </div>
+          </article>
+          
+        </div>
+        <div class="pagination-row">
+          <button class="pg-arrow" id="pgPrev" onclick="changePage(-1)">&#8249;</button>
+          <div class="pages" id="pgButtons"></div>
+          <button class="pg-arrow" id="pgNext" onclick="changePage(1)">&#8250;</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo footer-logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 3C20.1 3 18.8 3.5 17.8 4.4C17 3.5 15.8 3 14.5 3C11.5 3 9 5.5 9 8.5C9 12 11.5 14.8 14.9 17.8C15.8 18.6 16.8 19.4 17.8 20.3C18.8 19.4 19.8 18.6 20.7 17.8C24.1 14.8 26.6 12 26.6 8.5C26.5 5.5 24.3 3 21.5 3Z" fill="#2563EB"/><path d="M17.8 26C17 25.3 16.3 24.7 15.6 24.1C12 21 9 18 9 13.5C9 12.5 9.2 11.5 9.5 10.6C8 11.8 7 13.8 7 16C7 21 12 25 17.8 29C23.6 25 28.6 21 28.6 16C28.6 14.8 28.3 13.7 27.8 12.7C27.6 13 27.4 13.4 27.1 13.7C26.9 18.5 22.8 22.4 17.8 26Z" fill="#1D4ED8"/></svg>
+          <span>AlmaTour</span>
+        </a>
+        <p>Discover the most beautiful destinations around Almaty.</p>
+        <div class="social-row"><span>Follow</span><div class="social-icons"><a href="#">t</a><a href="#">i</a><a href="#">y</a><a href="#">f</a></div></div>
+      </div>
+      <div class="footer-links">
+        <div><h4>Company</h4><a href="#">About Us</a><a href="#">Tour Guide</a><a href="#">Tours</a><a href="#">Contact Us</a></div>
+        <div><h4>Resources</h4><a href="#">Free e-books</a><a href="#">Tour Guide</a><a href="#">FAQ</a><a href="#">Blog</a></div>
+        <div><h4>Extra Links</h4><a href="#">Customer Support</a><a href="#">Terms And Conditions</a><a href="#">Privacy Policy</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2025 AlmaTour. All Rights Reserved.</div>
+  </footer>
+
+  <script src="tour_detail.js"></script>
+  <script src="tours.js"></script>
+</body>
+</html>

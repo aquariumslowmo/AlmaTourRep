@@ -6,9 +6,10 @@ FastAPI backend with H3 spatial indexing, RBAC, audit logging, and event-driven 
 
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional, List
-from datetime import datetime
 import sqlite3
 import json
 import queue
@@ -16,12 +17,26 @@ import threading
 import h3
 import hashlib
 import secrets
+import os
+from contextlib import asynccontextmanager
 
 # ─────────────────────────────────────────────
 # App Setup
 # ─────────────────────────────────────────────
-app = FastAPI(title="AlmaTour Information System", version="1.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    print("AlmaTour IS started. Database initialized")
+    yield
+
+app = FastAPI(title="AlmaTour Information System", version="1.0.0", lifespan=lifespan)
 security = HTTPBearer()
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+
+# Mount images from the assets folder directly
+app.mount("/images", StaticFiles(directory=os.path.join(PROJECT_ROOT, "assets")), name="images")
 
 # In-memory event queue (simulates message broker)
 event_queue: queue.Queue = queue.Queue()
@@ -279,6 +294,19 @@ class TourUpdate(BaseModel):
 # ENDPOINTS
 # ─────────────────────────────────────────────
 
+@app.get("/", include_in_schema=False)
+def root():
+    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+
+@app.get("/style.css", include_in_schema=False)
+def get_css():
+    return FileResponse(os.path.join(BASE_DIR, "style.css"))
+
+@app.get("/script.js", include_in_schema=False)
+def get_js():
+    return FileResponse(os.path.join(BASE_DIR, "script.js"))
+
+
 @app.post("/auth/login", tags=["Auth"])
 def login(req: LoginRequest, db: sqlite3.Connection = Depends(get_db)):
     """Authenticate and receive a Bearer token."""
@@ -477,11 +505,8 @@ def my_bookings(
 # ─────────────────────────────────────────────
 # Startup
 # ─────────────────────────────────────────────
-@app.on_event("startup")
-def startup():
-    init_db()
-    print("AlmaTour IS started. Database initialized.")
+# (Removed deprecated on_event)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

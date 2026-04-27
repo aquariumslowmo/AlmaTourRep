@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlmaTour | Tour Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tour_detail.css">
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav class="top-nav">
+  <a href="index.html" class="logo">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21.5 3C20.1 3 18.8 3.5 17.8 4.4C17 3.5 15.8 3 14.5 3C11.5 3 9 5.5 9 8.5C9 12 11.5 14.8 14.9 17.8C15.8 18.6 16.8 19.4 17.8 20.3C18.8 19.4 19.8 18.6 20.7 17.8C24.1 14.8 26.6 12 26.6 8.5C26.5 5.5 24.3 3 21.5 3Z" fill="#2563EB"/>
+      <path d="M17.8 26C17 25.3 16.3 24.7 15.6 24.1C12 21 9 18 9 13.5C9 12.5 9.2 11.5 9.5 10.6C8 11.8 7 13.8 7 16C7 21 12 25 17.8 29C23.6 25 28.6 21 28.6 16C28.6 14.8 28.3 13.7 27.8 12.7C27.6 13 27.4 13.4 27.1 13.7C26.9 18.5 22.8 22.4 17.8 26Z" fill="#1D4ED8"/>
+    </svg>
+    <span>AlmaTour</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">CONTACT</a></li>
+    <li><a href="index.html">HOME</a></li>
+    <li><a href="tours.html">TOUR</a></li>
+    <li><a href="#">ABOUT</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tours.html" class="btn-book">BOOK A TOUR</a>
+    <a href="profile.html"><button class="icon-btn" aria-label="Account">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button></a>
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<div class="detail-hero" id="detailHero">
+  <div class="detail-hero-overlay"></div>
+  <div class="detail-hero-content">
+    <h1 class="detail-title" id="detailTitle">Tour Name</h1>
+    <div class="detail-meta">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>
+      <span id="detailLocation">Location</span>
+      <span class="meta-sep">|</span>
+      <span class="detail-rating" id="detailRatingLine"></span>
+    </div>
+  </div>
+ 
+  <!-- Booking sidebar card -->
+  <div class="booking-card">
+    <div class="booking-card-price" id="bcPrice">0 ₸</div>
+    <div class="booking-card-stars" id="bcStars"></div>
+ 
+    <div class="booking-card-section-title">Location</div>
+    <div class="map-embed">
+      <iframe id="mapIframe" src="" width="100%" height="130" style="border:0;border-radius:8px" allowfullscreen loading="lazy"></iframe>
+    </div>
+ 
+    <div class="booking-card-contact">
+      <div class="contact-row"><span>Contact</span><span>+7 777 777 77 77</span></div>
+      <div class="contact-row"><span>Email</span><span>almatour@sdu.edu.kz</span></div>
+    </div>
+ 
+    <a class="btn-book-now" id="btnBookNow" href="#">Book Now</a>
+  </div>
+</div>
+ 
+<!-- MAIN CONTENT -->
+<div class="detail-body">
+  <div class="detail-main">
+ 
+    <!-- Description -->
+    <p class="detail-desc" id="detailDesc"></p>
+ 
+    <hr class="divider">
+ 
+    <!-- About the tour -->
+    <h2 class="section-h">About the Tour</h2>
+    <p class="detail-about" id="detailAbout"></p>
+ 
+    <hr class="divider">
+ 
+    <!-- Itinerary -->
+    <h2 class="section-h">Itinerary</h2>
+    <ul class="itinerary-list" id="itineraryList"></ul>
+ 
+    <hr class="divider">
+ 
+    <!-- Included / Not Included -->
+    <div class="inc-grid">
+      <div>
+        <h2 class="section-h">What's Included</h2>
+        <ul class="inc-list included" id="includedList"></ul>
+      </div>
+      <div>
+        <h2 class="section-h">What's Not Included</h2>
+        <ul class="inc-list excluded" id="excludedList"></ul>
+      </div>
+    </div>
+ 
+    <hr class="divider">
+ 
+    <!-- Gallery -->
+    <h2 class="section-h">Gallery</h2>
+    <div class="gallery-grid" id="galleryGrid"></div>
+ 
+  </div>
+</div>
+ 
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="logo footer-logo">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 3C20.1 3 18.8 3.5 17.8 4.4C17 3.5 15.8 3 14.5 3C11.5 3 9 5.5 9 8.5C9 12 11.5 14.8 14.9 17.8C15.8 18.6 16.8 19.4 17.8 20.3C18.8 19.4 19.8 18.6 20.7 17.8C24.1 14.8 26.6 12 26.6 8.5C26.5 5.5 24.3 3 21.5 3Z" fill="#2563EB"/><path d="M17.8 26C17 25.3 16.3 24.7 15.6 24.1C12 21 9 18 9 13.5C9 12.5 9.2 11.5 9.5 10.6C8 11.8 7 13.8 7 16C7 21 12 25 17.8 29C23.6 25 28.6 21 28.6 16C28.6 14.8 28.3 13.7 27.8 12.7C27.6 13 27.4 13.4 27.1 13.7C26.9 18.5 22.8 22.4 17.8 26Z" fill="#1D4ED8"/></svg>
+        <span>AlmaTour</span>
+      </a>
+      <p>Discover The Most Beautiful Destinations Around Almaty.</p>
+      <div class="social-row"><span>Follow</span>
+        <div class="social-icons">
+          <a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.77a8.16 8.16 0 004.77 1.52V6.84a4.84 4.84 0 01-1-.15z"/></svg>
+          </a>
+          <a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19a2.74 2.74 0 00-1.94-1.95C18.01 5 12 5 12 5s-6.01 0-7.64.24a2.74 2.74 0 00-1.94 1.95A28.89 28.89 0 002 12a28.89 28.89 0 00.42 4.81 2.74 2.74 0 001.94 1.94C5.99 19 12 19 12 19s6.01 0 7.64-.25a2.74 2.74 0 001.94-1.94A28.89 28.89 0 0022 12a28.89 28.89 0 00-.42-4.81zM10 15V9l5 3-5 3z"/></svg>
+          </a>
+          <a href="#">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 14.37l-2.95-.924c-.64-.2-.657-.64.136-.954l11.57-4.461c.537-.194 1.006.131.968.19z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-links">
+      <div><h4>Company</h4><a href="#">About Us</a><a href="#">Tour Guide</a><a href="#">Tours</a><a href="#">Contact Us</a></div>
+      <div><h4>Recourses</h4><a href="#">Free e-books</a><a href="#">Tour Guide</a><a href="#">FAQ</a><a href="#">Blog</a></div>
+      <div><h4>Extra Links</h4><a href="#">Customer Support</a><a href="#">Terms And Conditions</a><a href="#">Privacy Policy</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 AlmaTour. All Rights Reserved.</div>
+</footer>
+ 
+<script src="tour_detail.js"></script>
+</body>
+</html>

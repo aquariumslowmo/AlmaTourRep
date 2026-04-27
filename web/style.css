@@ -57,8 +57,12 @@
     list-style: none;
   }
 
-  .nav-links a {
+  a {
     text-decoration: none;
+  }
+
+  .nav-links a {
+    /* text-decoration: none; */
     color: var(--muted);
     font-size: 13px;
     font-weight: 500;

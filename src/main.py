@@ -18,7 +18,19 @@ import h3
 import hashlib
 import secrets
 import os
+import time
+import logging
+from fastapi import Request
 from contextlib import asynccontextmanager
+
+# ─────────────────────────────────────────────
+# Logging Setup
+# ─────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("AlmaTour")
 
 # ─────────────────────────────────────────────
 # App Setup
@@ -31,6 +43,20 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AlmaTour Information System", version="1.0.0", lifespan=lifespan)
 security = HTTPBearer()
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    logger.info(f"Request started: {request.method} {request.url.path}")
+    try:
+        response = await call_next(request)
+        process_time = time.time() - start_time
+        logger.info(f"Request success: {request.method} {request.url.path} - Status: {response.status_code} - Time: {process_time:.4f}s")
+        return response
+    except Exception as e:
+        process_time = time.time() - start_time
+        logger.error(f"Request failed: {request.method} {request.url.path} - Error: {str(e)} - Time: {process_time:.4f}s")
+        raise e
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
@@ -298,18 +324,20 @@ class TourUpdate(BaseModel):
 def root():
     return FileResponse(os.path.join(BASE_DIR, "index.html"))
 
-@app.get("/style.css", include_in_schema=False)
-def get_css():
-    return FileResponse(os.path.join(BASE_DIR, "style.css"))
-
-@app.get("/script.js", include_in_schema=False)
-def get_js():
-    return FileResponse(os.path.join(BASE_DIR, "script.js"))
+@app.get("/{filename}", include_in_schema=False)
+def serve_static(filename: str):
+    file_path = os.path.join(BASE_DIR, filename)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail="File not found")
 
 
 @app.post("/auth/login", tags=["Auth"])
 def login(req: LoginRequest, db: sqlite3.Connection = Depends(get_db)):
     """Authenticate and receive a Bearer token."""
+    if not req.email or not req.password:
+        raise HTTPException(status_code=400, detail="Email and password cannot be empty")
+        
     user = db.execute("SELECT * FROM users WHERE email=? AND password_hash=?",
                       (req.email, hash_password(req.password))).fetchone()
     if not user:
@@ -325,6 +353,7 @@ def login(req: LoginRequest, db: sqlite3.Connection = Depends(get_db)):
 # ─── ENDPOINT 1: List Tours (with optional H3 filter) ───
 @app.get("/tours", tags=["Tours"])
 def list_tours(
+    search_text: Optional[str] = None,
     h3_region: Optional[str] = None,
     lat: Optional[float] = None,
     lng: Optional[float] = None,
@@ -333,31 +362,39 @@ def list_tours(
     user=Depends(require_permission("read:tours"))
 ):
     """
-    List all tours. Supports H3 spatial filtering:
+    List all tours. Supports text search and H3 spatial filtering:
+    - search_text: substring search in title or description
     - h3_region: filter by exact H3 region cell (res 5)
     - lat+lng+radius_km: find tours within H3 ring around a point
     """
+    query = "SELECT * FROM tours WHERE status='active'"
+    params = []
+
+    if search_text:
+        query += " AND (title LIKE ? OR description LIKE ?)"
+        search_pattern = f"%{search_text}%"
+        params.extend([search_pattern, search_pattern])
+
     if lat and lng:
         # H3 ring-based spatial query
         center_cell = h3.latlng_to_cell(lat, lng, 8)
         k_rings = max(1, int(radius_km / 1.5))  # ~1.5km per ring at res 8
-        nearby_cells = h3.grid_disk(center_cell, k_rings)
+        nearby_cells = list(h3.grid_disk(center_cell, k_rings))
         placeholders = ",".join("?" * len(nearby_cells))
-        rows = db.execute(
-            f"SELECT * FROM tours WHERE h3_index IN ({placeholders}) AND status='active'",
-            list(nearby_cells)
-        ).fetchall()
+        query += f" AND h3_index IN ({placeholders})"
+        params.extend(nearby_cells)
+        rows = db.execute(query, params).fetchall()
         return {"source": "h3_spatial_query", "center_cell": center_cell,
                 "rings": k_rings, "tours": [dict(r) for r in rows]}
 
     if h3_region:
-        rows = db.execute(
-            "SELECT * FROM tours WHERE h3_region=? AND status='active'", (h3_region,)
-        ).fetchall()
+        query += " AND h3_region=?"
+        params.append(h3_region)
+        rows = db.execute(query, params).fetchall()
         return {"source": "h3_region_filter", "h3_region": h3_region,
                 "tours": [dict(r) for r in rows]}
 
-    rows = db.execute("SELECT * FROM tours WHERE status='active'").fetchall()
+    rows = db.execute(query, params).fetchall()
     return {"tours": [dict(r) for r in rows]}
 
 

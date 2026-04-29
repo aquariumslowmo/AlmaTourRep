@@ -533,7 +533,7 @@ const TOURS = {
     included: ['Guide', 'Cathedral entrance'],
     excluded: ['Museum entry', 'Food & drinks', 'Personal expenses'],
     gallery: [
-      'https://images.unsplash.com/photo-1514565131-fce0801e6f4e?w=600&q=80',
+      'assets/panfilov-park.jpg',
       'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80',
       'https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=600&q=80',
       'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',

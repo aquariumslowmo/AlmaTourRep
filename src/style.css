@@ -624,7 +624,7 @@
 }
 .discover-img-main-inner {
   width: 100%; height: 100%;
-  background: url('images/main-inner-shore.jpg') center/cover;
+  background: url('assets/main-inner-shore.jpg') center/cover;
   transition: transform .4s;
 }
 .discover-img-main:hover .discover-img-main-inner { transform: scale(1.05); }
@@ -692,7 +692,7 @@
 }
 .discover-img-wide-inner {
   width: 100%; height: 100%;
-  background: url('images/right-inner.jpg') center/cover;
+  background: url('assets/right-inner.jpg') center/cover;
   transition: transform .4s;
 }
 .discover-img-wide:hover .discover-img-wide-inner { transform: scale(1.04); }

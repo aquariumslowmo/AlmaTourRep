@@ -543,81 +543,59 @@ const TOURS = {
   },
 };
  
-// ── Populate page from URL param ──────────────────────────────────────
-function init() {
+/**
+ * Tour Detail Page - API Integration
+ * Loads single tour from backend and displays details
+ */
+
+(async function () {
   const params = new URLSearchParams(window.location.search);
-  const id = params.get('tour') || 'kolsay';
-  const tour = TOURS[id] || TOURS['kolsay'];
- 
-  document.title = `AlmaTour | ${tour.name}`;
- 
-  // Hero background
-  document.getElementById('detailHero').style.backgroundImage = `url('${tour.heroImg}')`;
- 
-  // Text content
-  document.getElementById('detailTitle').textContent = tour.name;
-  document.getElementById('detailLocation').textContent = `${tour.location} | ${tour.rating}`;
- 
-  // Rating line
-  const stars = '★'.repeat(Math.round(tour.rating)) + '☆'.repeat(5 - Math.round(tour.rating));
-  document.getElementById('detailRatingLine').innerHTML = `<span style="color:#f59e0b">${stars}</span> (${tour.reviews} reviews)`;
- 
-  // Booking card
-  document.getElementById('bcPrice').textContent = `${tour.price} ₸`;
-  document.getElementById('bcStars').innerHTML = `${'★'.repeat(Math.round(tour.rating))}<span style="color:#d1d5db">${'★'.repeat(5 - Math.round(tour.rating))}</span> (${tour.reviews} reviews)`;
- 
-  // Map
-  document.getElementById('mapIframe').src =
-    `https://maps.google.com/maps?q=${tour.mapQuery}&output=embed`;
- 
-  // Book Now → passes data to booking page
-  const bookParams = new URLSearchParams({
-    tour: tour.id,
-    name: tour.name,
-    img: tour.heroImg,
-    price: tour.price.replace(',', ''),
-    duration: tour.duration,
-    start: tour.start,
-    meeting: tour.meeting,
-  });
-  document.getElementById('btnBookNow').href = `booking.html?${bookParams}`;
- 
-  // Description
-  document.getElementById('detailDesc').textContent = tour.desc;
-  document.getElementById('detailAbout').innerHTML = tour.about.replace(/\n/g, '<br><br>');
- 
-  // Itinerary
-  const iList = document.getElementById('itineraryList');
-  tour.itinerary.forEach(item => {
-    const li = document.createElement('li');
-    if (item.milestone) li.classList.add('milestone');
-    li.textContent = `${item.time} — ${item.label}`;
-    iList.appendChild(li);
-  });
- 
-  // Included / Excluded
-  const incList = document.getElementById('includedList');
-  const excList = document.getElementById('excludedList');
-  tour.included.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    incList.appendChild(li);
-  });
-  tour.excluded.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    excList.appendChild(li);
-  });
- 
-  // Gallery
-  const gallery = document.getElementById('galleryGrid');
-  tour.gallery.forEach(src => {
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = tour.name;
-    img.loading = 'lazy';
-    gallery.appendChild(img);
-  });
-}
- 
-init();
+  const tourId = params.get('tour');
+
+  if (!tourId) {
+    console.error('Tour ID not provided in URL');
+    return;
+  }
+
+  try {
+    // Load all tours and find the one with matching ID
+    const toursResponse = await api.listTours();
+    const tours = toursResponse.tours || [];
+    const tour = tours.find(t => t.id == tourId);
+
+    if (!tour) {
+      console.error('Tour not found');
+      return;
+    }
+
+    // Update page title
+    document.title = `AlmaTour | ${tour.title}`;
+
+    // Populate tour details - safe populate
+    const setIfExists = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+
+    setIfExists('detailTitle', tour.title);
+    setIfExists('detailLocation', tour.location_name);
+    setIfExists('detailDesc', tour.description || 'No description available');
+
+    // Set hero image
+    const heroImg = document.getElementById('detailHero');
+    if (heroImg) {
+      heroImg.style.backgroundImage = `url('/images/${tour.id}.jpg')`;
+    }
+
+    // Set booking link
+    const bookBtn = document.getElementById('btnBookNow');
+    if (bookBtn) {
+      bookBtn.href = `booking.html?tour=${tour.id}`;
+    }
+
+    console.log('Tour detail loaded:', tour.title);
+
+  } catch (error) {
+    console.error('Failed to load tour details:', error);
+  }
+})();

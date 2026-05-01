@@ -1,7 +1,230 @@
-const TOURS = {
-  kolsay: {
-    id: 'kolsay',
-    name: 'Kolsay Lake Tour',
+/**
+ * Tour Detail Page - API Integration
+ * Loads single tour from backend API and displays all details
+ */
+
+(async function () {
+  try {
+    // Extract tour ID from URL params
+    const params = new URLSearchParams(window.location.search);
+    const tourId = params.get('tour');
+
+    if (!tourId) {
+      showError('Tour ID not provided in URL');
+      return;
+    }
+
+    console.log('Loading tour:', tourId);
+
+    // Fetch all tours from API
+    const response = await api.listTours();
+    const tours = response.tours || [];
+    console.log('Fetched tours:', tours.length);
+
+    // Find tour by ID (comparing as numbers since API returns numbers)
+    const tour = tours.find(t => String(t.id) === String(tourId));
+
+    if (!tour) {
+      showError(`Tour with ID "${tourId}" not found`);
+      return;
+    }
+
+    console.log('Found tour:', tour.title);
+
+    // Populate page
+    populateTourDetail(tour);
+
+  } catch (error) {
+    console.error('Failed to load tour details:', error);
+    showError('Failed to load tour details. Please try again.');
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Helper: Show error message
+  // ────────────────────────────────────────────────────────────────────
+  function showError(message) {
+    const body = document.querySelector('body');
+    body.innerHTML = `
+      <div style="padding: 40px 20px; text-align: center; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div>
+          <h2>Error</h2>
+          <p>${message}</p>
+          <a href="tours.html" style="color: #2563EB; text-decoration: none; margin-top: 20px; display: inline-block;">
+            ← Back to Tours
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Helper: Safely set element text content
+  // ────────────────────────────────────────────────────────────────────
+  function setIfExists(elementId, content) {
+    const el = document.getElementById(elementId);
+    if (el && content !== null && content !== undefined) {
+      el.textContent = content;
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Main: Populate tour details
+  // ────────────────────────────────────────────────────────────────────
+  function populateTourDetail(tour) {
+    // Update page title
+    document.title = `AlmaTour | ${tour.title}`;
+
+    // ──── Hero Section ────
+    setIfExists('detailTitle', tour.title);
+    setIfExists('detailLocation', tour.location_name || 'Almaty region · Kazakhstan');
+
+    // Set rating line
+    const ratingEl = document.getElementById('detailRatingLine');
+    if (ratingEl) {
+      ratingEl.textContent = `★★★★☆ 4.8 (324 reviews)`;
+    }
+
+    // Set hero background image
+    const heroEl = document.getElementById('detailHero');
+    if (heroEl) {
+      const imageUrl = `/images/${tour.id}.jpg`;
+      heroEl.style.backgroundImage = `url('${imageUrl}')`;
+      heroEl.style.backgroundPosition = 'center';
+      heroEl.style.backgroundSize = 'cover';
+    }
+
+    // ──── Booking Card ────
+    setIfExists('bcPrice', `${Math.round(tour.price).toLocaleString()} ₸`);
+
+    const starsEl = document.getElementById('bcStars');
+    if (starsEl) {
+      starsEl.textContent = '★★★★☆ 4.8';
+    }
+
+    // Set map iframe
+    const mapEl = document.getElementById('mapIframe');
+    if (mapEl) {
+      const query = encodeURIComponent(tour.location_name || 'Almaty, Kazakhstan');
+      mapEl.src = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50462.58434812647!2d77.04473!3d43.238099!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38849f51a20a1d0f%3A0x28f24f2e8f6eb96!2s${query}!5e0!3m2!1sen!2sKZ!4v1234567890`;
+    }
+
+    // Set booking button
+    const bookBtn = document.getElementById('btnBookNow');
+    if (bookBtn) {
+      bookBtn.href = `booking.html?tour=${tour.id}`;
+    }
+
+    // ──── Main Content ────
+    setIfExists('detailDesc', tour.description || 'Discover this amazing tour destination.');
+
+    // About section
+    const aboutText = tour.description
+      ? `${tour.description}\n\nThis tour is one of the most popular destinations in the Almaty region, offering stunning natural scenery and a memorable experience.`
+      : 'This is an amazing tour destination in the Almaty region.';
+    setIfExists('detailAbout', aboutText);
+
+    // ──── Itinerary ────
+    populateItinerary(tour);
+
+    // ──── Included / Excluded ────
+    populateIncluded(tour);
+
+    // ──── Gallery ────
+    populateGallery(tour);
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Populate Itinerary
+  // ────────────────────────────────────────────────────────────────────
+  function populateItinerary(tour) {
+    const itineraryList = document.getElementById('itineraryList');
+    if (!itineraryList) return;
+
+    // Create a basic itinerary based on tour duration
+    const duration = tour.duration_hours || 8;
+    const startTime = 7; // 7:00 AM
+    const steps = [
+      { time: `${String(startTime).padStart(2, '0')}:00`, label: 'Departure from Almaty', milestone: true },
+      { time: `${String(startTime + 2).padStart(2, '0')}:00`, label: `Arrival at ${tour.location_name}`, milestone: false },
+      { time: `${String(startTime + 3).padStart(2, '0')}:30`, label: 'Guided tour and exploration', milestone: false },
+      { time: `${String(startTime + Math.floor(duration / 2)).padStart(2, '0')}:00`, label: 'Lunch break', milestone: true },
+      { time: `${String(startTime + duration - 1).padStart(2, '0')}:00`, label: 'Return to Almaty', milestone: true },
+    ];
+
+    itineraryList.innerHTML = steps
+      .map(step => {
+        const className = step.milestone ? 'milestone' : '';
+        return `
+          <li class="${className}">
+            <div class="time">${step.time}</div>
+            <div class="label">${step.label}</div>
+          </li>
+        `;
+      })
+      .join('');
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Populate Included / Excluded
+  // ────────────────────────────────────────────────────────────────────
+  function populateIncluded(tour) {
+    const includedList = document.getElementById('includedList');
+    const excludedList = document.getElementById('excludedList');
+
+    const included = [
+      'Transportation',
+      'Professional guide',
+      'Entrance fees',
+      'Basic refreshments'
+    ];
+
+    const excluded = [
+      'Meals (except refreshments)',
+      'Personal insurance',
+      'Optional equipment rental',
+      'Tips and gratuities'
+    ];
+
+    if (includedList) {
+      includedList.innerHTML = included
+        .map(item => `<li>✓ ${item}</li>`)
+        .join('');
+    }
+
+    if (excludedList) {
+      excludedList.innerHTML = excluded
+        .map(item => `<li>✗ ${item}</li>`)
+        .join('');
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Populate Gallery
+  // ────────────────────────────────────────────────────────────────────
+  function populateGallery(tour) {
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (!galleryGrid) return;
+
+    // Use placeholder images with the tour ID
+    const galleries = [
+      `/images/${tour.id}.jpg`,
+      `https://via.placeholder.com/400x300?text=${encodeURIComponent(tour.title)} - View 2`,
+      `https://via.placeholder.com/400x300?text=${encodeURIComponent(tour.title)} - View 3`,
+      `https://via.placeholder.com/400x300?text=${encodeURIComponent(tour.title)} - View 4`,
+      `https://via.placeholder.com/400x300?text=${encodeURIComponent(tour.title)} - View 5`,
+      `https://via.placeholder.com/400x300?text=${encodeURIComponent(tour.location_name)} - View 6`,
+    ];
+
+    galleryGrid.innerHTML = galleries
+      .map((img, i) => `
+        <div class="gallery-item">
+          <img src="${img}" alt="Tour gallery ${i + 1}" onerror="this.src='https://via.placeholder.com/400x300?text=Image+${i + 1}'">
+        </div>
+      `)
+      .join('');
+  }
+
+})();
     location: 'Almaty Region',
     region: 'Almaty region · Kazakhstan',
     price: '25,000',
@@ -544,32 +767,32 @@ const TOURS = {
 };
  
 /**
- * Tour Detail Page - API Integration
- * Loads single tour from backend and displays details
+ * Tour Detail Page - Local Data Integration
+ * Loads single tour from local TOURS object and displays details
  */
 
-(async function () {
+(function () {
   const params = new URLSearchParams(window.location.search);
   const tourId = params.get('tour');
 
   if (!tourId) {
     console.error('Tour ID not provided in URL');
+    document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h2>Error: Tour not found</h2><p>Tour ID not provided in URL</p><a href="tours.html">Back to Tours</a></div>';
     return;
   }
 
   try {
-    // Load all tours and find the one with matching ID
-    const toursResponse = await api.listTours();
-    const tours = toursResponse.tours || [];
-    const tour = tours.find(t => t.id == tourId);
+    // Get tour from local TOURS object
+    const tour = TOURS[tourId];
 
     if (!tour) {
-      console.error('Tour not found');
+      console.error('Tour not found:', tourId);
+      document.body.innerHTML = `<div style="padding: 20px; text-align: center;"><h2>Error: Tour not found</h2><p>Tour with ID "${tourId}" does not exist</p><a href="tours.html">Back to Tours</a></div>`;
       return;
     }
 
     // Update page title
-    document.title = `AlmaTour | ${tour.title}`;
+    document.title = `AlmaTour | ${tour.name}`;
 
     // Populate tour details - safe populate
     const setIfExists = (id, text) => {
@@ -577,14 +800,14 @@ const TOURS = {
       if (el) el.textContent = text;
     };
 
-    setIfExists('detailTitle', tour.title);
-    setIfExists('detailLocation', tour.location_name);
-    setIfExists('detailDesc', tour.description || 'No description available');
+    setIfExists('detailTitle', tour.name);
+    setIfExists('detailLocation', tour.region);
+    setIfExists('detailDesc', tour.desc || 'No description available');
 
     // Set hero image
     const heroImg = document.getElementById('detailHero');
     if (heroImg) {
-      heroImg.style.backgroundImage = `url('/images/${tour.id}.jpg')`;
+      heroImg.style.backgroundImage = `url('${tour.heroImg}')`;
     }
 
     // Set booking link
@@ -593,9 +816,10 @@ const TOURS = {
       bookBtn.href = `booking.html?tour=${tour.id}`;
     }
 
-    console.log('Tour detail loaded:', tour.title);
+    console.log('Tour detail loaded:', tour.name);
 
   } catch (error) {
     console.error('Failed to load tour details:', error);
+    document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h2>Error</h2><p>Failed to load tour details</p><a href="tours.html">Back to Tours</a></div>';
   }
 })();

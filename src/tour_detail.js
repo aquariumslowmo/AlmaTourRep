@@ -823,3 +823,5 @@ const TOURS = {
     document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h2>Error</h2><p>Failed to load tour details</p><a href="tours.html">Back to Tours</a></div>';
   }
 })();
+
+})();

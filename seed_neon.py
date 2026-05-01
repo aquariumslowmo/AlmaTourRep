@@ -66,6 +66,7 @@ def seed_database():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS tours (
                 id SERIAL PRIMARY KEY,
+                slug VARCHAR(255),
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
                 guide_id INTEGER REFERENCES users(id),
@@ -80,6 +81,12 @@ def seed_database():
                 schedule_date DATE NOT NULL,
                 duration_hours NUMERIC(5, 2),
                 status VARCHAR(50) DEFAULT 'active' CHECK(status IN ('active', 'cancelled', 'completed')),
+                image_url TEXT,
+                badge VARCHAR(50) DEFAULT 'Nature',
+                rating NUMERIC(3, 1) DEFAULT 4.8,
+                rating_count INTEGER DEFAULT 0,
+                spots_left INTEGER DEFAULT 0,
+                meta_text VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -160,39 +167,47 @@ def seed_database():
         
         print("✅ Users seeded (admin, guide, tourist)")
         
-        # Seed tours (get guide_id first)
+        # Seed showcase tours used by the Tours page
         print("\n📍 Seeding tours...")
         
         cursor.execute("SELECT id FROM users WHERE email = %s", ("guide@almatour.kz",))
         guide_id = cursor.fetchone()[0]
         
         TOURS = [
-            ("Shymbulak Mountain Tour", "Cable car ride & ski resort visit", guide_id, 45.0, 10, 10, 43.1393, 77.0785, "875283473c7ffff", "872830977bcffff", "Shymbulak, Almaty", "2026-03-15", 2.0),
-            ("Medeu Ice Rink Experience", "World's highest skating rink outdoor visit", guide_id, 25.0, 20, 20, 43.1560, 77.0572, "8752839a1f7ffff", "872830977bcffff", "Medeu, Almaty", "2026-03-15", 2.0),
-            ("Kok-Tobe Cable Car & View", "Panoramic city views from Kok-Tobe Hill", guide_id, 30.0, 15, 15, 43.2335, 76.9720, "8752839535fffff", "872830977bcffff", "Kok-Tobe, Almaty", "2026-03-15", 2.0),
-            ("Almaty Green Bazaar Food Tour", "Taste local cuisine at the historic bazaar", guide_id, 20.0, 12, 12, 43.2551, 76.9440, "8752830517fffff", "872830977bcffff", "Green Bazaar, Almaty", "2026-03-15", 2.0),
-            ("Charyn Canyon Day Trip", "Spectacular canyon 200km from Almaty", guide_id, 80.0, 8, 8, 43.3503, 79.0700, "8728318cf8fffff", "872830977bcffff", "Charyn Canyon", "2026-03-15", 8.0),
-            ("Kaindy Lake Adventure", "Beautiful alpine lake with submerged forest", guide_id, 60.0, 10, 10, 43.4703, 77.7800, "872831d95c0ffff", "872830977bcffff", "Kaindy Lake", "2026-03-15", 6.0),
-            ("Big Almaty Lake Trek", "Turquoise mountain lake with scenic views", guide_id, 35.0, 15, 15, 43.0880, 77.1234, "872831ab12fffff", "872830977bcffff", "Big Almaty Lake", "2026-03-15", 3.0),
-            ("Turgen Gorge Safari", "Wildlife observation and gorge exploration", guide_id, 75.0, 8, 8, 43.5503, 77.8800, "872831c34dffff", "872830977bcffff", "Turgen Gorge", "2026-03-15", 7.0),
-            ("Altyn-Emel National Park", "Desert and mountain landscapes at the park", guide_id, 95.0, 6, 6, 44.5000, 79.3500, "8728300156fffff", "872830977bcffff", "Altyn-Emel", "2026-03-15", 10.0),
-            ("Chyn River Kayaking", "Whitewater kayaking adventure", guide_id, 55.0, 12, 12, 43.4200, 78.2100, "872831e56fffff", "872830977bcffff", "Chyn River", "2026-03-15", 4.0),
-            ("Issyk Lake Crater Tour", "Beautiful crater lake surrounded by mountains", guide_id, 40.0, 14, 14, 43.3100, 77.4500, "872831f78fffff", "872830977bcffff", "Issyk Lake", "2026-03-15", 5.0),
-            ("Turanaul Valley Hike", "Scenic valley with streams and forests", guide_id, 50.0, 10, 10, 43.6000, 77.9000, "872832012fffff", "872830977bcffff", "Turanaul Valley", "2026-03-15", 5.5),
-            ("Alma-Arasan Gorge", "Beautiful gorge with waterfalls", guide_id, 32.0, 16, 16, 43.2100, 76.8234, "872832234fffff", "872830977bcffff", "Alma-Arasan", "2026-03-15", 3.5),
-            ("Assy Plateau", "High altitude plateau with unique ecosystem", guide_id, 70.0, 9, 9, 43.5800, 77.1234, "872832456fffff", "872830977bcffff", "Assy Plateau", "2026-03-15", 8.5),
-            ("Panfilov Park City Tour", "Historic park and Ascension Cathedral", guide_id, 18.0, 20, 20, 43.2380, 76.9405, "872832678fffff", "872830977bcffff", "Panfilov Park", "2026-03-15", 2.5),
-            ("Buttercup Gorge Photo Tour", "Photography hotspot with landscapes", guide_id, 48.0, 8, 8, 43.2900, 77.2100, "87283289afffff", "872830977bcffff", "Buttercup Gorge", "2026-03-15", 4.0),
+            {"slug": "kolsay", "title": "Kolsay Lake", "description": "Experience the stunning beauty of Kolsay Lake, one of the most picturesque destinations in Almaty region.", "price": 25000, "capacity": 5, "seats_available": 5, "lat": 43.0779, "lng": 78.3096, "location_name": "Almaty region", "duration_hours": 9, "badge": "Nature", "rating": 4.8, "rating_count": 3624, "spots_left": 5, "image_url": "/images/kolsay.jpg", "meta_text": "9 hours · Day trip"},
+            {"slug": "shymbulak", "title": "Shymbulak Resort", "description": "Take the cable car to Shymbulak Resort for mountain views, snow activities, and summer hiking.", "price": 30000, "capacity": 3, "seats_available": 3, "lat": 43.1667, "lng": 77.0833, "location_name": "Almaty region", "duration_hours": 5, "badge": "Nature", "rating": 4.8, "rating_count": 4564, "spots_left": 3, "image_url": "/images/shymb.jpg", "meta_text": "Half day"},
+            {"slug": "charyn", "title": "Charyn Canyon", "description": "Explore the dramatic red rock formations and scenic views of Charyn Canyon.", "price": 20000, "capacity": 7, "seats_available": 7, "lat": 43.3503, "lng": 79.0700, "location_name": "Almaty region", "duration_hours": 8, "badge": "Adventure", "rating": 4.8, "rating_count": 2897, "spots_left": 7, "image_url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80", "meta_text": "8 hours · Day trip"},
+            {"slug": "kaindy", "title": "Kaindy Lake", "description": "Discover the unique Kaindy Lake with its distinctive sunken tree formations.", "price": 20000, "capacity": 9, "seats_available": 9, "lat": 43.3025, "lng": 78.4704, "location_name": "Almaty region", "duration_hours": 9, "badge": "Nature", "rating": 4.7, "rating_count": 2724, "spots_left": 9, "image_url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", "meta_text": "9 hours · Day trip"},
+            {"slug": "medeu", "title": "Medeu Ice Rink", "description": "Visit the famous Medeu ice rink for skating, fresh mountain air, and great views.", "price": 25000, "capacity": 2, "seats_available": 2, "lat": 43.1680, "lng": 77.0770, "location_name": "Almaty region", "duration_hours": 6, "badge": "Adventure", "rating": 4.3, "rating_count": 534, "spots_left": 2, "image_url": "/images/medeu.jpg", "meta_text": "6 hours · Day trip"},
+            {"slug": "koktobe", "title": "Kok-Tobe Hill", "description": "Enjoy panoramic views of Almaty city from Kok-Tobe Hill and its cable car ride.", "price": 18000, "capacity": 8, "seats_available": 8, "lat": 43.2382, "lng": 76.9737, "location_name": "Almaty region", "duration_hours": 4, "badge": "City tours", "rating": 4.8, "rating_count": 2364, "spots_left": 8, "image_url": "/images/kok-tobe.jpg", "meta_text": "4 hours · Day trip"},
+            {"slug": "ayusai", "title": "Ayusai Waterfall", "description": "Hike to the beautiful Ayusai Waterfall during this 5-hour half-day adventure.", "price": 15000, "capacity": 6, "seats_available": 6, "lat": 43.1435, "lng": 77.0212, "location_name": "Almaty region", "duration_hours": 5, "badge": "Nature", "rating": 4.6, "rating_count": 1120, "spots_left": 6, "image_url": "/images/ayusai.jpg", "meta_text": "5 hours · Half day"},
+            {"slug": "kokzhailau", "title": "Kok Zhailau Plateau", "description": "A scenic mountain plateau with panoramic views and fresh alpine air.", "price": 18000, "capacity": 8, "seats_available": 8, "lat": 43.1484, "lng": 77.1321, "location_name": "Almaty region", "duration_hours": 6, "badge": "Nature", "rating": 4.9, "rating_count": 3210, "spots_left": 8, "image_url": "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80", "meta_text": "6 hours · Day trip"},
+            {"slug": "almaarasan", "title": "Alma-Arasan Gorge", "description": "Relax in a beautiful gorge with waterfalls, hot springs, and mountain scenery.", "price": 12000, "capacity": 10, "seats_available": 10, "lat": 43.2108, "lng": 76.8719, "location_name": "Almaty region", "duration_hours": 4, "badge": "Nature", "rating": 4.5, "rating_count": 876, "spots_left": 10, "image_url": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&q=80", "meta_text": "4 hours · Half day"},
+            {"slug": "terrenkur", "title": "Terrenkur Trail", "description": "Walk the popular Terrenkur Trail for a light city hike and scenic views.", "price": 10000, "capacity": 12, "seats_available": 12, "lat": 43.2367, "lng": 76.9471, "location_name": "Almaty, Medeu district", "duration_hours": 3, "badge": "City tours", "rating": 4.7, "rating_count": 1540, "spots_left": 12, "image_url": "https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=800&q=80", "meta_text": "3 hours · Half day"},
+            {"slug": "assy", "title": "Assy Plateau", "description": "Explore the high-altitude Assy Plateau, known for stunning landscapes and open skies.", "price": 28000, "capacity": 4, "seats_available": 4, "lat": 43.5871, "lng": 77.1663, "location_name": "Almaty region", "duration_hours": 10, "badge": "Adventure", "rating": 4.8, "rating_count": 1876, "spots_left": 4, "image_url": "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&q=80", "meta_text": "10 hours · Day trip"},
+            {"slug": "turgen", "title": "Turgen Waterfalls", "description": "Visit the scenic Turgen Waterfalls and enjoy a full day of nature and fresh air.", "price": 22000, "capacity": 7, "seats_available": 7, "lat": 43.4431, "lng": 77.6209, "location_name": "Almaty region", "duration_hours": 8, "badge": "Nature", "rating": 4.7, "rating_count": 2105, "spots_left": 7, "image_url": "https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?w=800&q=80", "meta_text": "8 hours · Day trip"},
+            {"slug": "bartogay", "title": "Bartogay Reservoir", "description": "Spend a day at Bartogay Reservoir with beautiful water views and peaceful landscapes.", "price": 20000, "capacity": 9, "seats_available": 9, "lat": 43.8548, "lng": 78.5975, "location_name": "Almaty region", "duration_hours": 9, "badge": "Nature", "rating": 4.6, "rating_count": 934, "spots_left": 9, "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80", "meta_text": "9 hours · Day trip"},
+            {"slug": "issyk", "title": "Issyk Lake", "description": "Discover Issyk Lake, a beautiful mountain lake surrounded by scenic peaks.", "price": 17000, "capacity": 6, "seats_available": 6, "lat": 43.3598, "lng": 77.4000, "location_name": "Almaty region", "duration_hours": 7, "badge": "Nature", "rating": 4.5, "rating_count": 1688, "spots_left": 6, "image_url": "https://images.unsplash.com/photo-1478827217976-7214a0556393?w=800&q=80", "meta_text": "7 hours · Day trip"},
+            {"slug": "panfilov", "title": "Panfilov Park", "description": "Stroll through the historic Panfilov Park in the heart of Almaty city.", "price": 8000, "capacity": 15, "seats_available": 15, "lat": 43.2388, "lng": 76.9476, "location_name": "Almaty City Center", "duration_hours": 3, "badge": "City tours", "rating": 4.6, "rating_count": 2230, "spots_left": 15, "image_url": "/images/panfilov-park.jpg", "meta_text": "3 hours · Half day"},
         ]
         
         for tour in TOURS:
+            h3_idx = h3.latlng_to_cell(tour["lat"], tour["lng"], 8)
+            h3_reg = h3.latlng_to_cell(tour["lat"], tour["lng"], 5)
             cursor.execute("""
                 INSERT INTO tours 
-                (title, description, guide_id, price, capacity, seats_available, lat, lng, 
-                 h3_index, h3_region, location_name, schedule_date, duration_hours, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (slug, title, description, guide_id, price, capacity, seats_available, lat, lng, 
+                 h3_index, h3_region, location_name, schedule_date, duration_hours, status,
+                 image_url, badge, rating, rating_count, spots_left, meta_text)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT DO NOTHING
-            """, tour + ("active",))
+            """, (
+                tour["slug"], tour["title"], tour["description"], guide_id, tour["price"],
+                tour["capacity"], tour["seats_available"], tour["lat"], tour["lng"],
+                h3_idx, h3_reg, tour["location_name"], "2026-03-15", tour["duration_hours"], "active",
+                tour["image_url"], tour["badge"], tour["rating"], tour["rating_count"],
+                tour["spots_left"], tour["meta_text"]
+            ))
         
         conn.commit()
         print(f"✅ {len(TOURS)} tours seeded")

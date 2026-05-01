@@ -83,10 +83,13 @@
       </aside>
 
       <section class="tours-panel">
-        <div class="tour-grid">
-          <!-- Tours loaded dynamically from API -->
+        <div class="tour-grid tour-grid--loading" aria-busy="true">
+          <div class="tour-loader" role="status" aria-live="polite" aria-label="Loading tours">
+            <span class="tour-spinner" aria-hidden="true"></span>
+            <p>Loading tours...</p>
+          </div>
         </div>
-        <div class="pagination-row">
+        <div class="pagination-row pagination-row--hidden">
           <button class="pg-arrow" id="pgPrev" onclick="changePage(-1)">&#8249;</button>
           <div class="pages" id="pgButtons"></div>
           <button class="pg-arrow" id="pgNext" onclick="changePage(1)">&#8250;</button>

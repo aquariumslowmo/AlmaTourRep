@@ -4,8 +4,6 @@
  */
 
 (async function () {
-
-
   const PER_PAGE = 6;
 
   let allTours = [];
@@ -14,108 +12,190 @@
   let currentPage = 0;
 
   const pgButtonsEl = document.getElementById('pgButtons');
-  const pgPrev       = document.getElementById('pgPrev');
-  const pgNext       = document.getElementById('pgNext');
-  const tourGrid     = document.querySelector('.tour-grid');
+  const pgPrev = document.getElementById('pgPrev');
+  const pgNext = document.getElementById('pgNext');
+  const tourGrid = document.querySelector('.tour-grid');
+  const paginationRow = document.querySelector('.pagination-row');
+  const applyBtn = document.querySelector('.apply-btn');
+  const resetBtn = document.querySelector('.reset-btn');
+  const searchInput = document.querySelector('.search-input input');
+  const priceRange = document.querySelector('input[type="range"]');
+  const typeCheckboxes = document.querySelectorAll('.filter-group:nth-of-type(4) input[type="checkbox"]');
 
-  // ──────────────────────────────────────────────────────────────────
-  // Load tours from API
-  // ──────────────────────────────────────────────────────────────────
-  async function loadTours() {
-    try {
-      const response = await api.listTours();
-      allTours = response.tours || [];
-      filteredTours = [...allTours];
-      buildButtons();
-      showPage(0);
-    } catch (error) {
-      console.error('Failed to load tours:', error);
-      tourGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2em;">Failed to load tours. Please try again.</div>';
-    }
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
-  // ──────────────────────────────────────────────────────────────────
-  // Render tour card HTML
-  // ──────────────────────────────────────────────────────────────────
+  function getTourKey(tour) {
+    return String(tour?.slug || tour?.id || '');
+  }
+
+  function formatDurationLabel(tour) {
+    if (tour?.meta_text) return tour.meta_text;
+
+    const hours = Number(tour?.duration_hours);
+    if (!Number.isFinite(hours) || hours <= 0) return 'Day trip';
+
+    const hoursText = Number.isInteger(hours) ? `${hours} hours` : `${hours.toFixed(1)} hours`;
+    const tripKind = hours <= 5 ? 'Half day' : 'Day trip';
+    return `${hoursText} · ${tripKind}`;
+  }
+
+  function renderStars(rating) {
+    const safeRating = Number(rating);
+    const filled = Number.isFinite(safeRating) ? Math.max(0, Math.min(5, Math.round(safeRating))) : 5;
+    return '★'.repeat(filled) + '☆'.repeat(5 - filled);
+  }
+
+  function formatRatingText(tour) {
+    const rating = Number(tour?.rating);
+    const ratingValue = Number.isFinite(rating) ? rating.toFixed(1) : '4.8';
+    const count = Number(tour?.rating_count);
+    const ratingCount = Number.isFinite(count) ? count.toLocaleString() : '3,624';
+    return `${ratingValue} (${ratingCount})`;
+  }
+
+  function formatPrice(price) {
+    const value = Number(price) || 0;
+    return `${Math.round(value).toLocaleString()} ₸`;
+  }
+
+  function resolveImageUrl(tour) {
+    return tour?.image_url || `https://via.placeholder.com/800x600?text=${encodeURIComponent(tour?.title || 'AlmaTour')}`;
+  }
+
+  function setPaginationVisibility(visible) {
+    if (!paginationRow) return;
+    paginationRow.classList.toggle('pagination-row--hidden', !visible);
+  }
+
+  function renderLoadingState() {
+    if (!tourGrid) return;
+    tourGrid.classList.add('tour-grid--loading');
+    tourGrid.setAttribute('aria-busy', 'true');
+    tourGrid.innerHTML = `
+      <div class="tour-loader" role="status" aria-live="polite" aria-label="Loading tours">
+        <span class="tour-spinner" aria-hidden="true"></span>
+        <p>Loading tours...</p>
+      </div>
+    `;
+    setPaginationVisibility(false);
+  }
+
+  function renderEmptyState(message) {
+    if (!tourGrid) return;
+    tourGrid.classList.remove('tour-grid--loading');
+    tourGrid.removeAttribute('aria-busy');
+    tourGrid.innerHTML = `
+      <div class="tour-loader tour-empty-state" role="status">
+        <p>${escapeHtml(message)}</p>
+      </div>
+    `;
+    setPaginationVisibility(false);
+  }
+
+  function renderErrorState(message) {
+    if (!tourGrid) return;
+    tourGrid.classList.remove('tour-grid--loading');
+    tourGrid.removeAttribute('aria-busy');
+    tourGrid.innerHTML = `
+      <div class="tour-loader tour-error-state">
+        <p>${escapeHtml(message)}</p>
+        <button class="apply-btn" type="button" id="retryLoadTours">Retry</button>
+      </div>
+    `;
+    setPaginationVisibility(false);
+
+    const retryBtn = document.getElementById('retryLoadTours');
+    if (retryBtn) retryBtn.addEventListener('click', loadTours);
+  }
+
   function createTourCard(tour) {
     const card = document.createElement('article');
     card.className = 'tour-card';
 
-    const imageUrl = `/images/${tour.id}.jpg`; // Change when you have backend image storage
-    const rating = '★★★★☆';
-    const ratingCount = '4.8 (3,624)';
-    const spot = tour.seats_available > 0 ? tour.seats_available : 'Full';
+    const tourKey = getTourKey(tour);
+    const ratingValue = Number(tour?.rating);
+    const badge = tour?.badge || 'Nature';
+    const spotsLeft = tour?.spots_left ?? tour?.seats_available ?? '—';
 
     card.innerHTML = `
-      <img src="${imageUrl}" alt="${tour.title}" onerror="this.src='https://via.placeholder.com/300x200?text=${encodeURIComponent(tour.title)}'">
+      <img src="${escapeHtml(resolveImageUrl(tour))}" alt="${escapeHtml(tour?.title || 'Tour')}" loading="lazy" onerror="this.src='https://via.placeholder.com/800x600?text=${encodeURIComponent(tour?.title || 'AlmaTour')}'">
       <div class="tour-content">
         <div class="tour-meta-top">
-          <span>${tour.duration_hours || 2} hours · Day trip</span>
-          <span class="badge">Nature</span>
+          <span>${escapeHtml(formatDurationLabel(tour))}</span>
+          <span class="badge">${escapeHtml(badge)}</span>
         </div>
-        <h3>${tour.title}</h3>
-        <p>${tour.location_name}</p>
+        <h3>${escapeHtml(tour?.title || 'Untitled tour')}</h3>
+        <p>${escapeHtml(tour?.location_name || 'Almaty region')}</p>
         <div class="tour-bottom">
           <div>
-            <div class="tour-rating">${rating} <span>${ratingCount}</span></div>
-            <small>Spots left: ${spot}</small>
+            <div class="tour-rating">${renderStars(ratingValue)} <span>${escapeHtml(formatRatingText(tour))}</span></div>
+            <small>Spots left: ${escapeHtml(spotsLeft)}</small>
           </div>
-          <div class="tour-price">From <strong>${Math.round(tour.price).toLocaleString()} ₸</strong></div>
+          <div class="tour-price">From <strong>${escapeHtml(formatPrice(tour?.price))}</strong></div>
         </div>
-        <a href="tour_detail.html?tour=${tour.id}&from=api" class="details-btn">View Details</a>
+        <a href="tour_detail.html?tour=${encodeURIComponent(tourKey)}&from=api" class="details-btn">View Details</a>
       </div>
     `;
     return card;
   }
 
-  // ──────────────────────────────────────────────────────────────────
-  // Build (render) page buttons
-  // ──────────────────────────────────────────────────────────────────
   function buildButtons() {
+    if (!pgButtonsEl) return;
     pgButtonsEl.innerHTML = '';
     totalPages = Math.ceil(filteredTours.length / PER_PAGE);
+
     for (let i = 0; i < totalPages; i++) {
       const btn = document.createElement('button');
+      btn.type = 'button';
       btn.textContent = i + 1;
       btn.addEventListener('click', () => goTo(i));
       pgButtonsEl.appendChild(btn);
     }
   }
 
-  // ──────────────────────────────────────────────────────────────────
-  // Show page
-  // ──────────────────────────────────────────────────────────────────
-  function showPage(p) {
-    currentPage = p;
+  function updatePaginationState() {
+    if (pgPrev) pgPrev.disabled = currentPage === 0 || totalPages === 0;
+    if (pgNext) pgNext.disabled = currentPage >= totalPages - 1 || totalPages === 0;
 
-    // Clear grid
+    if (pgButtonsEl) {
+      [...pgButtonsEl.children].forEach((btn, i) => {
+        btn.classList.toggle('active', i === currentPage);
+      });
+    }
+  }
+
+  function showPage(pageIndex) {
+    if (!tourGrid) return;
+
+    currentPage = pageIndex;
+    tourGrid.classList.remove('tour-grid--loading');
+    tourGrid.removeAttribute('aria-busy');
     tourGrid.innerHTML = '';
 
-    // Get tours for this page
-    const start = p * PER_PAGE;
-    const end = start + PER_PAGE;
-    const pageToTours = filteredTours.slice(start, end);
+    if (filteredTours.length === 0) {
+      renderEmptyState('No tours match your filters yet.');
+      return;
+    }
 
-    // Render cards
-    pageToTours.forEach(tour => {
-      tourGrid.appendChild(createTourCard(tour));
-    });
+    const start = pageIndex * PER_PAGE;
+    const pageTours = filteredTours.slice(start, start + PER_PAGE);
+    pageTours.forEach((tour) => tourGrid.appendChild(createTourCard(tour)));
 
-    // Update button states
-    [...pgButtonsEl.children].forEach((btn, i) => {
-      btn.classList.toggle('active', i === p);
-    });
-
-    pgPrev.disabled = p === 0 || totalPages === 0;
-    pgNext.disabled = p >= totalPages - 1;
-
-    // Scroll to top
+    updatePaginationState();
+    setPaginationVisibility(true);
     tourGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function goTo(p) {
-    if (p < 0 || p >= totalPages) return;
-    showPage(p);
+  function goTo(pageIndex) {
+    if (pageIndex < 0 || pageIndex >= totalPages) return;
+    showPage(pageIndex);
   }
 
   function changePage(delta) {
@@ -125,38 +205,26 @@
 
   window.changePage = changePage;
 
-  // ──────────────────────────────────────────────────────────────────
-  // Filtering
-  // ──────────────────────────────────────────────────────────────────
-  const applyBtn = document.querySelector('.apply-btn');
-  const resetBtn = document.querySelector('.reset-btn');
-  const searchInput = document.querySelector('.search-input input');
-  const priceRange = document.querySelector('input[type="range"]');
-  const typeCheckboxes = document.querySelectorAll('.filter-group:nth-of-type(4) input[type="checkbox"]');
-
   function applyFilters() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const maxPrice = parseInt(priceRange.value, 10);
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const maxPrice = priceRange ? parseInt(priceRange.value, 10) : Number.POSITIVE_INFINITY;
 
     const checkedTypes = Array.from(typeCheckboxes)
-      .filter(cb => cb.checked)
-      .map(cb => cb.parentElement.textContent.trim());
+      .filter((cb) => cb.checked)
+      .map((cb) => cb.parentElement.textContent.trim().toLowerCase());
 
-    filteredTours = allTours.filter(tour => {
-      // 1. Price filter
-      if (Math.round(tour.price) > maxPrice) return false;
+    filteredTours = allTours.filter((tour) => {
+      if (Number(tour.price) > maxPrice) return false;
 
-      // 2. Type filter (placeholder - adjust based on your tour types)
-      if (checkedTypes.length > 0) {
-        // Add your logic here to match tour types
-      }
+      const tourType = String(tour.badge || '').trim().toLowerCase();
+      if (checkedTypes.length > 0 && !checkedTypes.includes(tourType)) return false;
 
-      // 3. Text search
       if (searchTerm) {
-        const title = tour.title.toLowerCase();
-        const desc = (tour.description || '').toLowerCase();
-        const location = (tour.location_name || '').toLowerCase();
-        if (!title.includes(searchTerm) && !desc.includes(searchTerm) && !location.includes(searchTerm)) {
+        const title = String(tour.title || '').toLowerCase();
+        const desc = String(tour.description || '').toLowerCase();
+        const location = String(tour.location_name || '').toLowerCase();
+        const meta = String(tour.meta_text || '').toLowerCase();
+        if (!title.includes(searchTerm) && !desc.includes(searchTerm) && !location.includes(searchTerm) && !meta.includes(searchTerm)) {
           return false;
         }
       }
@@ -169,12 +237,38 @@
     showPage(0);
   }
 
+  async function loadTours() {
+    renderLoadingState();
+
+    try {
+      if (typeof api === 'undefined') {
+        throw new Error('API client is not available');
+      }
+
+      const response = await api.listTours();
+      allTours = response?.tours || [];
+      filteredTours = [...allTours];
+      currentPage = 0;
+      buildButtons();
+
+      if (filteredTours.length === 0) {
+        renderEmptyState('No tours available yet.');
+        return;
+      }
+
+      showPage(0);
+    } catch (error) {
+      console.error('Failed to load tours:', error);
+      renderErrorState('Failed to load tours. Please try again.');
+    }
+  }
+
   if (applyBtn) applyBtn.addEventListener('click', applyFilters);
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      priceRange.value = 35000;
-      Array.from(typeCheckboxes).forEach(cb => cb.checked = false);
-      searchInput.value = '';
+      if (priceRange) priceRange.value = priceRange.max || 35000;
+      Array.from(typeCheckboxes).forEach((cb) => (cb.checked = false));
+      if (searchInput) searchInput.value = '';
       applyFilters();
     });
   }
@@ -185,9 +279,6 @@
     });
   }
 
-  // ──────────────────────────────────────────────────────────────────
-  // Initial load
-  // ──────────────────────────────────────────────────────────────────
   await loadTours();
 })();
 

@@ -1,6 +1,6 @@
 const API_CONFIG = {
   // For local development with your FastAPI backend run at 127.0.0.1:8000
-  BASE_URL: "https://almatourback.onrender.com/",
+  BASE_URL: "https://almatourback.onrender.com",
 
   ENDPOINTS: {
     LOGIN: "/auth/login",

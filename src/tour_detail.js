@@ -223,6 +223,8 @@
       `)
       .join('');
   }
+const TOURS = {
+  kolsay: {
     location: 'Almaty Region',
     region: 'Almaty region · Kazakhstan',
     price: '25,000',

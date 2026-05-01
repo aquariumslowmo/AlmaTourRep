@@ -12,6 +12,7 @@
  
   // Build numbered page buttons
   function buildButtons() {
+    if (!pgButtonsEl) return;
     pgButtonsEl.innerHTML = '';
     totalPages = Math.ceil(filteredCards.length / PER_PAGE);
     for (let i = 0; i < totalPages; i++) {
@@ -24,6 +25,8 @@
  
   // Show only cards for the current page
   function showPage(p) {
+    const grid = document.querySelector('.tour-grid');
+
     // First hide all cards
     allCards.forEach(c => c.style.display = 'none');
 
@@ -36,15 +39,19 @@
     });
  
     // Update button states
-    [...pgButtonsEl.children].forEach((btn, i) => {
-      btn.classList.toggle('active', i === p);
-    });
- 
-    pgPrev.disabled = p === 0 || totalPages === 0;
-    pgNext.disabled = p >= totalPages - 1;
+    if (pgButtonsEl) {
+      [...pgButtonsEl.children].forEach((btn, i) => {
+        btn.classList.toggle('active', i === p);
+      });
+    }
+
+    if (pgPrev) pgPrev.disabled = p === 0 || totalPages === 0;
+    if (pgNext) pgNext.disabled = p >= totalPages - 1;
 
     // Scroll to top of grid
-    document.querySelector('.tour-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (grid) {
+      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
  
   function goTo(p) {
@@ -75,8 +82,8 @@
   }
 
   function applyFilters() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const maxPrice = parseInt(priceRange.value, 10);
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const maxPrice = priceRange ? parseInt(priceRange.value, 10) : Number.POSITIVE_INFINITY;
 
     // Get checked categories
     const checkedTypes = Array.from(typeCheckboxes)
@@ -109,20 +116,24 @@
     showPage(0);
   }
 
-  applyBtn.addEventListener('click', applyFilters);
+  if (applyBtn) applyBtn.addEventListener('click', applyFilters);
 
   // Bind the search input to enter key
-  searchInput.addEventListener('keyup', (e) => {
-    if(e.key === 'Enter') applyFilters();
-  });
+  if (searchInput) {
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') applyFilters();
+    });
+  }
 
-  resetBtn.addEventListener('click', () => {
-    priceRange.value = 35000;
-    // Update the visual tracker if you have one, falling back to simple reset
-    Array.from(typeCheckboxes).forEach(cb => cb.checked = false);
-    searchInput.value = '';
-    applyFilters();
-  });
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (priceRange) priceRange.value = 35000;
+      // Update the visual tracker if you have one, falling back to simple reset
+      Array.from(typeCheckboxes).forEach(cb => cb.checked = false);
+      if (searchInput) searchInput.value = '';
+      applyFilters();
+    });
+  }
 
   buildButtons();
   showPage(0);

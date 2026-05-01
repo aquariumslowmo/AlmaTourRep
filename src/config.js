@@ -161,4 +161,7 @@ class ApiClient {
 }
 
 const api = new ApiClient();
+window.API_CONFIG = API_CONFIG;
+window.ApiClient = ApiClient;
+window.api = api;
 

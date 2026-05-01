@@ -1,10 +1,15 @@
-const session = JSON.parse(localStorage.getItem('almaTour_session') || 'null');
-if (!session) window.location.replace('auth.html');
- 
-// ── Profile data (extend session with extra fields) ───────────────────
-let profileData = JSON.parse(localStorage.getItem('almaTour_profile') || 'null') || {
-  name:  session ? session.name  : '',
-  email: session ? session.email : '',
+// ── Auth check
+const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.TOKEN);
+if (!token) {
+  window.location.replace('auth.html');
+}
+
+const userSession = JSON.parse(localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER) || '{}');
+
+// ── Profile data
+let profileData = {
+  name:  userSession.name || '',
+  email: userSession.email || '',
   phone: '',
 };
  
@@ -46,15 +51,13 @@ function saveProfile() {
   profileData.name  = document.getElementById('editName').value.trim()  || profileData.name;
   profileData.email = document.getElementById('editEmail').value.trim() || profileData.email;
   profileData.phone = document.getElementById('editPhone').value.trim();
- 
-  localStorage.setItem('almaTour_profile', JSON.stringify(profileData));
- 
-  // Also update session name
-  const s = JSON.parse(localStorage.getItem('almaTour_session') || '{}');
-  s.name  = profileData.name;
-  s.email = profileData.email;
-  localStorage.setItem('almaTour_session', JSON.stringify(s));
- 
+
+  // Update local storage
+  const userData = JSON.parse(localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER) || '{}');
+  userData.name = profileData.name;
+  userData.email = profileData.email;
+  localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify(userData));
+
   renderProfile();
   toggleEdit();
 }
@@ -67,40 +70,46 @@ function showSection(id, btn) {
   btn.classList.add('active');
 }
  
-// ── Bookings ──────────────────────────────────────────────────────────
-function renderBookings() {
-  const bookings = JSON.parse(localStorage.getItem('almaTour_bookings') || '[]');
+// ── Bookings (fetch from API)
+async function renderBookings() {
   const grid = document.getElementById('bookingsGrid');
-  grid.innerHTML = '';
- 
-  if (!bookings.length) {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🗓️</div>
-        <p>No bookings yet.<br><a href="tours.html">Browse tours</a> to get started.</p>
-      </div>`;
-    return;
+  grid.innerHTML = '<div class="empty-state"><p>Loading bookings...</p></div>';
+
+  try {
+    const response = await api.getMyBookings();
+    const bookings = response.bookings || [];
+
+    grid.innerHTML = '';
+
+    if (!bookings.length) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🗓️</div>
+          <p>No bookings yet.<br><a href="tours.html">Browse tours</a> to get started.</p>
+        </div>`;
+      return;
+    }
+
+    bookings.forEach(b => {
+      const statusClass = b.status.toLowerCase();
+      const statusIcon  = b.status === 'confirmed' ? '✓' : b.status === 'cancelled' ? '✗' : '⏳';
+
+      const card = document.createElement('div');
+      card.className = 'booking-card';
+      card.innerHTML = `
+        <div class="booking-card-img"></div>
+        <div class="booking-card-body">
+          <div class="booking-card-title">${b.title || 'Tour'}</div>
+          <div class="booking-card-meta">${b.schedule_date} · ${b.seats_booked} Guest${b.seats_booked > 1 ? 's' : ''}</div>
+          <span class="status-badge ${statusClass}">${statusIcon} ${b.status}</span>
+          <button class="btn-view-details" onclick="window.location.href='tour_detail.html?tour=${b.tour_id}'">View Details</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Failed to load bookings:', error);
+    grid.innerHTML = '<div class="empty-state"><p>Failed to load bookings. Please try again.</p></div>';
   }
- 
-  bookings.slice().reverse().forEach(b => {
-    const statusClass = b.status.toLowerCase();
-    const statusIcon  = b.status === 'Confirmed' ? '✓' : b.status === 'Pending' ? '⏳' : '✗';
-    const imgStyle    = b.tourImg
-      ? `style="background-image:url('${b.tourImg}')"`
-      : '';
- 
-    const card = document.createElement('div');
-    card.className = 'booking-card';
-    card.innerHTML = `
-      <div class="booking-card-img" ${imgStyle}></div>
-      <div class="booking-card-body">
-        <div class="booking-card-title">${b.tourName}</div>
-        <div class="booking-card-meta">${b.date} · ${b.guests} Guest${b.guests > 1 ? 's' : ''}</div>
-        <span class="status-badge ${statusClass}">${statusIcon} ${b.status}</span>
-        <button class="btn-view-details" onclick="window.location.href='tour_detail.html?tour=${b.tourId}'">View Details</button>
-      </div>`;
-    grid.appendChild(card);
-  });
 }
  
 renderBookings();
@@ -138,14 +147,14 @@ renderFavorites();
  
 // ── Logout ────────────────────────────────────────────────────────────
 function logout() {
-  localStorage.removeItem('almaTour_session');
+  api.logout();
   window.location.href = 'auth.html';
 }
- 
+
 // ── Delete account ────────────────────────────────────────────────────
 function deleteAccount() {
   if (confirm('Are you sure? This will permanently delete your account and all bookings.')) {
-    ['almaTour_session','almaTour_profile','almaTour_bookings'].forEach(k => localStorage.removeItem(k));
+    api.logout();
     window.location.href = 'auth.html';
   }
 }

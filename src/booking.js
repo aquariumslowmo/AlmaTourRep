@@ -1,12 +1,17 @@
 const params   = new URLSearchParams(window.location.search);
-const tourId   = params.get('tour')     || 'unknown';
+const tourId   = parseInt(params.get('tour') || '0', 10);
 const tourName = params.get('name')     || 'Tour';
 const tourImg  = params.get('img')      || '';
 const tourPrice = parseInt(params.get('price') || '0', 10);
 const tourDuration = params.get('duration') || '—';
 const tourStart    = params.get('start')    || '—';
 const tourMeeting  = params.get('meeting')  || '—';
- 
+
+// Check authentication
+if (!localStorage.getItem(API_CONFIG.STORAGE_KEYS.TOKEN)) {
+  window.location.href = 'auth.html';
+}
+
 // Populate sidebar
 document.getElementById('sidebarTitle').textContent   = tourName;
 document.getElementById('sideDuration').textContent   = tourDuration;
@@ -173,25 +178,42 @@ function proceedToPayment() {
     document.getElementById('calendarWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
- 
+
   const { d, m, y } = selectedDate;
   const dateStr = `${MONTHS[m].slice(0,3)} ${d}, ${y}`;
 
   const selectedAddons = [...document.querySelectorAll('.addon-item.active')].map(item => item.querySelector('.addon-name').textContent);
- 
-  const payParams = new URLSearchParams({
-    tour:       tourId,
-    name:       tourName,
-    img:        tourImg,
-    price:      tourPrice,
-    duration:   tourDuration,
-    start:      tourStart,
-    meeting:    tourMeeting,
-    guests:     guests,
-    date:       dateStr,
-    addons:     addonTotal,
-    addonNames: selectedAddons.join(','),
-  });
- 
-  window.location.href = `payment.html?${payParams.toString()}`;
+
+  // Create booking via API
+  createBooking();
+}
+
+async function createBooking() {
+  try {
+    const bookingData = {
+      tour_id: tourId,
+      seats: guests
+    };
+
+    const response = await api.createBooking(bookingData);
+
+    if (response && response.booking_id) {
+      // Show success message
+      const summaryEl = document.getElementById('priceSummary');
+      summaryEl.textContent = '✅ Booking confirmed! Redirecting to payment...';
+      summaryEl.style.color = '#10b981';
+
+      // Redirect to tours after 2 seconds
+      setTimeout(() => {
+        window.location.href = 'tours.html';
+      }, 2000);
+    } else {
+      throw new Error('Failed to create booking');
+    }
+  } catch (error) {
+    console.error('Booking error:', error);
+    const summaryEl = document.getElementById('priceSummary');
+    summaryEl.textContent = '❌ Booking failed. Please try again.';
+    summaryEl.style.color = '#dc2626';
+  }
 }

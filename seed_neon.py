@@ -167,16 +167,22 @@ def seed_database():
         guide_id = cursor.fetchone()[0]
         
         TOURS = [
-            ("Shymbulak Mountain Tour", "Cable car ride & ski resort visit", guide_id, 45.0, 10, 10,
-             43.1393, 77.0785, "875283473c7ffff", "872830977bcffff", "Shymbulak, Almaty", "2026-03-15", 2.0),
-            ("Medeu Ice Rink Experience", "World's highest skating rink outdoor visit", guide_id, 25.0, 20, 20,
-             43.1560, 77.0572, "8752839a1f7ffff", "872830977bcffff", "Medeu, Almaty", "2026-03-15", 2.0),
-            ("Kok-Tobe Cable Car & View", "Panoramic city views from Kok-Tobe Hill", guide_id, 30.0, 15, 15,
-             43.2335, 76.9720, "8752839535fffff", "872830977bcffff", "Kok-Tobe, Almaty", "2026-03-15", 2.0),
-            ("Almaty Green Bazaar Food Tour", "Taste local cuisine at the historic bazaar", guide_id, 20.0, 12, 12,
-             43.2551, 76.9440, "8752830517fffff", "872830977bcffff", "Green Bazaar, Almaty", "2026-03-15", 2.0),
-            ("Charyn Canyon Day Trip", "Spectacular canyon 200km from Almaty", guide_id, 80.0, 8, 8,
-             43.3503, 79.0700, "8728318cf8fffff", "872830977bcffff", "Charyn Canyon", "2026-03-15", 8.0),
+            ("Shymbulak Mountain Tour", "Cable car ride & ski resort visit", guide_id, 45.0, 10, 10, 43.1393, 77.0785, "875283473c7ffff", "872830977bcffff", "Shymbulak, Almaty", "2026-03-15", 2.0),
+            ("Medeu Ice Rink Experience", "World's highest skating rink outdoor visit", guide_id, 25.0, 20, 20, 43.1560, 77.0572, "8752839a1f7ffff", "872830977bcffff", "Medeu, Almaty", "2026-03-15", 2.0),
+            ("Kok-Tobe Cable Car & View", "Panoramic city views from Kok-Tobe Hill", guide_id, 30.0, 15, 15, 43.2335, 76.9720, "8752839535fffff", "872830977bcffff", "Kok-Tobe, Almaty", "2026-03-15", 2.0),
+            ("Almaty Green Bazaar Food Tour", "Taste local cuisine at the historic bazaar", guide_id, 20.0, 12, 12, 43.2551, 76.9440, "8752830517fffff", "872830977bcffff", "Green Bazaar, Almaty", "2026-03-15", 2.0),
+            ("Charyn Canyon Day Trip", "Spectacular canyon 200km from Almaty", guide_id, 80.0, 8, 8, 43.3503, 79.0700, "8728318cf8fffff", "872830977bcffff", "Charyn Canyon", "2026-03-15", 8.0),
+            ("Kaindy Lake Adventure", "Beautiful alpine lake with submerged forest", guide_id, 60.0, 10, 10, 43.4703, 77.7800, "872831d95c0ffff", "872830977bcffff", "Kaindy Lake", "2026-03-15", 6.0),
+            ("Big Almaty Lake Trek", "Turquoise mountain lake with scenic views", guide_id, 35.0, 15, 15, 43.0880, 77.1234, "872831ab12fffff", "872830977bcffff", "Big Almaty Lake", "2026-03-15", 3.0),
+            ("Turgen Gorge Safari", "Wildlife observation and gorge exploration", guide_id, 75.0, 8, 8, 43.5503, 77.8800, "872831c34dffff", "872830977bcffff", "Turgen Gorge", "2026-03-15", 7.0),
+            ("Altyn-Emel National Park", "Desert and mountain landscapes at the park", guide_id, 95.0, 6, 6, 44.5000, 79.3500, "8728300156fffff", "872830977bcffff", "Altyn-Emel", "2026-03-15", 10.0),
+            ("Chyn River Kayaking", "Whitewater kayaking adventure", guide_id, 55.0, 12, 12, 43.4200, 78.2100, "872831e56fffff", "872830977bcffff", "Chyn River", "2026-03-15", 4.0),
+            ("Issyk Lake Crater Tour", "Beautiful crater lake surrounded by mountains", guide_id, 40.0, 14, 14, 43.3100, 77.4500, "872831f78fffff", "872830977bcffff", "Issyk Lake", "2026-03-15", 5.0),
+            ("Turanaul Valley Hike", "Scenic valley with streams and forests", guide_id, 50.0, 10, 10, 43.6000, 77.9000, "872832012fffff", "872830977bcffff", "Turanaul Valley", "2026-03-15", 5.5),
+            ("Alma-Arasan Gorge", "Beautiful gorge with waterfalls", guide_id, 32.0, 16, 16, 43.2100, 76.8234, "872832234fffff", "872830977bcffff", "Alma-Arasan", "2026-03-15", 3.5),
+            ("Assy Plateau", "High altitude plateau with unique ecosystem", guide_id, 70.0, 9, 9, 43.5800, 77.1234, "872832456fffff", "872830977bcffff", "Assy Plateau", "2026-03-15", 8.5),
+            ("Panfilov Park City Tour", "Historic park and Ascension Cathedral", guide_id, 18.0, 20, 20, 43.2380, 76.9405, "872832678fffff", "872830977bcffff", "Panfilov Park", "2026-03-15", 2.5),
+            ("Buttercup Gorge Photo Tour", "Photography hotspot with landscapes", guide_id, 48.0, 8, 8, 43.2900, 77.2100, "87283289afffff", "872830977bcffff", "Buttercup Gorge", "2026-03-15", 4.0),
         ]
         
         for tour in TOURS:

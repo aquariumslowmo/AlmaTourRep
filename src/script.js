@@ -1,3 +1,42 @@
+  // ── Booking modal functions ──
+  function openBooking(cardElement) {
+    const name = cardElement.getAttribute('data-name') || 'Tour';
+    const location = cardElement.getAttribute('data-location') || '';
+    const duration = cardElement.getAttribute('data-duration') || '';
+    const start = cardElement.getAttribute('data-start') || '';
+    const meeting = cardElement.getAttribute('data-meeting') || '';
+    const price = cardElement.getAttribute('data-price') || '0';
+    const img = cardElement.getAttribute('data-img') || '';
+
+    // Populate the booking sidebar
+    document.getElementById('sidebarTitle').textContent = name;
+    document.getElementById('sideDuration').textContent = duration;
+    document.getElementById('sideStart').textContent = start;
+    document.getElementById('sideMeeting').textContent = meeting;
+    if (img) {
+      document.getElementById('sidebarImg').style.backgroundImage = `url('${img}')`;
+    }
+
+    // Show the booking overlay
+    const overlay = document.getElementById('bookingOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeBooking() {
+    const overlay = document.getElementById('bookingOverlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Expose globally for onclick handlers
+  window.openBooking = openBooking;
+  window.closeBooking = closeBooking;
+
   const allCards = [...document.querySelectorAll('#toursGrid .tour-card')];
   let page = 0;
   const perPage = 3;

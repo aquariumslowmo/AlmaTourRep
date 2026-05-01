@@ -4,6 +4,8 @@
  */
 
 (async function () {
+
+
   const PER_PAGE = 6;
 
   let allTours = [];

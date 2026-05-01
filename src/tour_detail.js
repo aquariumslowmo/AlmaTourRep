@@ -223,8 +223,6 @@
       `)
       .join('');
   }
-
-})();
     location: 'Almaty Region',
     region: 'Almaty region · Kazakhstan',
     price: '25,000',

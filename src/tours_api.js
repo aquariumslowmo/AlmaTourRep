@@ -118,29 +118,25 @@
   function createTourCard(tour) {
     const card = document.createElement('article');
     card.className = 'tour-card';
-
-    const tourKey = getTourKey(tour);
-    const ratingValue = Number(tour?.rating);
-    const badge = tour?.badge || 'Nature';
-    const spotsLeft = tour?.spots_left ?? tour?.seats_available ?? '—';
-
+    const spot = tour.seats_available > 0 ? tour.seats_available : 'Full';
+    const img = tour.image_url || `https://via.placeholder.com/400x250?text=${encodeURIComponent(tour.title)}`;
     card.innerHTML = `
-      <img src="${escapeHtml(resolveImageUrl(tour))}" alt="${escapeHtml(tour?.title || 'Tour')}" loading="lazy" onerror="this.src='https://via.placeholder.com/800x600?text=${encodeURIComponent(tour?.title || 'AlmaTour')}'">
+      <img src="${img}" alt="${tour.title}" onerror="this.src='https://via.placeholder.com/400x250?text=${encodeURIComponent(tour.title)}'">
       <div class="tour-content">
         <div class="tour-meta-top">
-          <span>${escapeHtml(formatDurationLabel(tour))}</span>
-          <span class="badge">${escapeHtml(badge)}</span>
+          <span>${tour.duration_hours || 2} hours · Day trip</span>
+          <span class="badge">${tour.badge || 'Nature'}</span>
         </div>
-        <h3>${escapeHtml(tour?.title || 'Untitled tour')}</h3>
-        <p>${escapeHtml(tour?.location_name || 'Almaty region')}</p>
+        <h3>${tour.title}</h3>
+        <p>${tour.location_name}</p>
         <div class="tour-bottom">
           <div>
-            <div class="tour-rating">${renderStars(ratingValue)} <span>${escapeHtml(formatRatingText(tour))}</span></div>
-            <small>Spots left: ${escapeHtml(spotsLeft)}</small>
+            <div class="tour-rating">★★★★☆ <span>4.8 (3,624)</span></div>
+            <small>Spots left: ${spot}</small>
           </div>
-          <div class="tour-price">From <strong>${escapeHtml(formatPrice(tour?.price))}</strong></div>
+          <div class="tour-price">From <strong>${Math.round(tour.price).toLocaleString()} ₸</strong></div>
         </div>
-        <a href="tour_detail.html?tour=${encodeURIComponent(tourKey)}&from=api" class="details-btn">View Details</a>
+        <a href="tour_detail.html?tour=${tour.id}" class="details-btn">View Details</a>
       </div>
     `;
     return card;
@@ -238,28 +234,16 @@
   }
 
   async function loadTours() {
-    renderLoadingState();
-
     try {
-      if (typeof api === 'undefined') {
-        throw new Error('API client is not available');
-      }
-
+      tourGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3em"><div style="width:40px;height:40px;border:4px solid #e5e7eb;border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto"></div><p style="margin-top:1em;color:#6b7280">Loading tours...</p></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
       const response = await api.listTours();
-      allTours = response?.tours || [];
+      allTours = response.tours || [];
       filteredTours = [...allTours];
-      currentPage = 0;
       buildButtons();
-
-      if (filteredTours.length === 0) {
-        renderEmptyState('No tours available yet.');
-        return;
-      }
-
       showPage(0);
     } catch (error) {
       console.error('Failed to load tours:', error);
-      renderErrorState('Failed to load tours. Please try again.');
+      tourGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2em">Failed to load tours. Please try again.</div>';
     }
   }
 

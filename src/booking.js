@@ -1,5 +1,12 @@
 const params   = new URLSearchParams(window.location.search);
-const tourId   = parseInt(params.get('tour') || '0', 10);
+const slugToDbId = {
+  'kolsay': 38, 'shymbulak': 39, 'charyn': 40, 'kaindy': 41,
+  'medeu': 42, 'koktobe': 43, 'ayusai': 44, 'kokzhailau': 45,
+  'almaarasan': 46, 'terrenkur': 47, 'assy': 48, 'turgen': 49,
+  'bartogay': 50, 'issyk': 51, 'panfilov': 52,
+};
+const rawTourId = params.get('tour') || '0';
+const tourId = slugToDbId[rawTourId] || parseInt(rawTourId, 10) || 0;
 const tourName = params.get('name')     || 'Tour';
 const tourImg  = params.get('img')      || '';
 const tourPrice = parseInt(params.get('price') || '0', 10);

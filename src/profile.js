@@ -94,10 +94,30 @@ async function renderBookings() {
       const statusClass = b.status.toLowerCase();
       const statusIcon  = b.status === 'confirmed' ? '✓' : b.status === 'cancelled' ? '✗' : '⏳';
 
+      const tourImages = {
+        'Kolsay Lake': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80',
+        'Shymbulak Resort': 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=600&q=80',
+        'Charyn Canyon': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
+        'Kaindy Lake': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80',
+        'Medeu Ice Rink': 'https://images.unsplash.com/photo-1551524164-687a55dd1126?w=600&q=80',
+        'Kok-Tobe Hill': 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
+        'Ayusai Waterfall': 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80',
+        'Kok Zhailau Plateau': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+        'Alma-Arasan Gorge': 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80',
+        'Terrenkur Trail': 'https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=600&q=80',
+        'Assy Plateau': 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80',
+        'Turgen Waterfalls': 'https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?w=600&q=80',
+        'Bartogay Reservoir': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80',
+        'Issyk Lake': 'https://images.unsplash.com/photo-1478827217976-7214a0556393?w=600&q=80',
+        'Panfilov Park': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80',
+      };
+      const img = tourImages[b.title] || '';
+      const imgStyle = img ? `style="background-image:url('${img}')"` : '';
+
       const card = document.createElement('div');
       card.className = 'booking-card';
       card.innerHTML = `
-        <div class="booking-card-img"></div>
+        <div class="booking-card-img" ${imgStyle}></div>
         <div class="booking-card-body">
           <div class="booking-card-title">${b.title || 'Tour'}</div>
           <div class="booking-card-meta">${b.schedule_date} · ${b.seats_booked} Guest${b.seats_booked > 1 ? 's' : ''}</div>

@@ -115,6 +115,27 @@ class ApiClient {
     }
   }
 
+  async register(name, email, password) {
+  try {
+    const response = await this.post('/auth/register', { name, email, password });
+    if (response && response.token) {
+      this.token = response.token;
+      localStorage.setItem(this.config.STORAGE_KEYS.TOKEN, response.token);
+      localStorage.setItem(this.config.STORAGE_KEYS.USER, JSON.stringify(response));
+      localStorage.setItem(this.config.STORAGE_KEYS.SESSION, JSON.stringify({
+        token: response.token,
+        role: response.role,
+        name: response.name,
+      }));
+      return response;
+    }
+    throw new Error('No token in response');
+  } catch (error) {
+    console.error('Register error:', error);
+    throw error;
+  }
+},
+
   logout() {
     this.token = null;
     localStorage.removeItem(this.config.STORAGE_KEYS.TOKEN);

@@ -119,7 +119,20 @@
     const card = document.createElement('article');
     card.className = 'tour-card';
     const spot = tour.seats_available > 0 ? tour.seats_available : 'Full';
-    const img = tour.image_url || `https://via.placeholder.com/400x250?text=${encodeURIComponent(tour.title)}`;
+    const img = tour.image_url || 'https://via.placeholder.com/400x250';
+
+    const titleToId = {
+      'Kolsay Lake': 'kolsay', 'Shymbulak Resort': 'shymbulak',
+      'Charyn Canyon': 'charyn', 'Kaindy Lake': 'kaindy',
+      'Medeu Ice Rink': 'medeu', 'Kok-Tobe Hill': 'koktobe',
+      'Ayusai Waterfall': 'ayusai', 'Kok Zhailau Plateau': 'kokzhailau',
+      'Alma-Arasan Gorge': 'almaarasan', 'Terrenkur Trail': 'terrenkur',
+      'Assy Plateau': 'assy', 'Turgen Waterfalls': 'turgen',
+      'Bartogay Reservoir': 'bartogay', 'Issyk Lake': 'issyk',
+      'Panfilov Park': 'panfilov',
+    };
+    const detailId = titleToId[tour.title] || tour.id;
+
     card.innerHTML = `
       <img src="${img}" alt="${tour.title}" onerror="this.src='https://via.placeholder.com/400x250?text=${encodeURIComponent(tour.title)}'">
       <div class="tour-content">
@@ -136,7 +149,7 @@
           </div>
           <div class="tour-price">From <strong>${Math.round(tour.price).toLocaleString()} ₸</strong></div>
         </div>
-        <a href="tour_detail.html?tour=${tour.id}" class="details-btn">View Details</a>
+        <a href="tour_detail.html?tour=${detailId}" class="details-btn">View Details</a>
       </div>
     `;
     return card;

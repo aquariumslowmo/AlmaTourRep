@@ -87,13 +87,20 @@ async function handleRegister() {
   btn.textContent = 'Creating account…';
 
   try {
-    // Note: Backend must have a registration endpoint
-    // For now, use pre-seeded accounts or implement registration endpoint
-    showMsg(msgEl, 'error', 'Registration via API not yet implemented. Use seed credentials.');
-    btn.classList.remove('loading');
-    btn.textContent = 'Sign Up';
+    const response = await api.register(name, email, password);
+    if (response && response.token) {
+      showMsg(msgEl, 'success', 'Account created! Redirecting…');
+      setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    } else {
+      showMsg(msgEl, 'error', 'Registration failed. Please try again.');
+      btn.classList.remove('loading');
+      btn.textContent = 'Sign Up';
+    }
   } catch (error) {
-    showMsg(msgEl, 'error', 'Registration failed. Please try again.');
+    const msg = error.message?.includes('already registered')
+      ? 'An account with this email already exists.'
+      : 'Registration failed. Please try again.';
+    showMsg(msgEl, 'error', msg);
     btn.classList.remove('loading');
     btn.textContent = 'Sign Up';
   }

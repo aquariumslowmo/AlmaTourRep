@@ -205,14 +205,21 @@ async function createBooking() {
     const response = await api.createBooking(bookingData);
 
     if (response && response.booking_id) {
-      // Show success message
       const summaryEl = document.getElementById('priceSummary');
       summaryEl.textContent = '✅ Booking confirmed! Redirecting to payment...';
       summaryEl.style.color = '#10b981';
 
-      // Redirect to tours after 2 seconds
+      const payParams = new URLSearchParams({
+        booking_id: response.booking_id,
+        tour: rawTourId,
+        name: tourName,
+        img: tourImg,
+        price: response.total_price,
+        guests: guests,
+      });
+
       setTimeout(() => {
-        window.location.href = 'tours.html';
+        window.location.href = 'payment.html?' + payParams.toString();
       }, 2000);
     } else {
       throw new Error('Failed to create booking');

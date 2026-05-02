@@ -276,6 +276,9 @@
     });
   }
 
+  const quickBookBtn = document.querySelector('.quick-book');
+  if (quickBookBtn) quickBookBtn.addEventListener('click', applyFilters);
+
   await loadTours();
 })();
 

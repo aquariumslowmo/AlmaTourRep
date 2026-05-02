@@ -572,9 +572,35 @@ def my_bookings(
     return {"bookings": [dict(r) for r in rows]}
 
 
-# ─────────────────────────────────────────────
+# ─── ENDPOINT 8: Cancel Booking ───
+@app.delete("/bookings/{booking_id}", tags=["Bookings"])
+def cancel_booking(
+    booking_id: int,
+    db: sqlite3.Connection = Depends(get_db),
+    user=Depends(require_permission("cancel:booking_own"))
+):
+    """Cancel and delete a booking."""
+    booking = db.execute("SELECT * FROM bookings WHERE id=?", (booking_id,)).fetchone()
+    if not booking:
+        raise HTTPException(404, "Booking not found")
+        
+    if booking["tourist_id"] != user["user_id"] and user["role"] != "admin":
+        raise HTTPException(403, "Not authorized to cancel this booking")
+
+    # update available seats securely
+    db.execute("""
+        UPDATE tours SET seats_available = seats_available + ? WHERE id=?
+    """, (booking["seats_booked"], booking["tour_id"]))
+    
+    # Delete booking from database
+    db.execute("DELETE FROM bookings WHERE id=?", (booking_id,))
+    db.commit()
+    
+    return {"status": "success", "message": "Booking deleted successfully"}
+
+# ──────────────────────────────
 # Startup
-# ─────────────────────────────────────────────
+# ──────────────────────────────
 # (Removed deprecated on_event)
 
 if __name__ == "__main__":

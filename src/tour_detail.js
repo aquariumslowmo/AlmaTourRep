@@ -569,10 +569,16 @@ function init() {
   // Map
   document.getElementById('mapIframe').src =
     `https://maps.google.com/maps?q=${tour.mapQuery}&output=embed`;
+  const slugToDbId = {
+    'kolsay': 38, 'shymbulak': 39, 'charyn': 40, 'kaindy': 41,
+    'medeu': 42, 'koktobe': 43, 'ayusai': 44, 'kokzhailau': 45,
+    'almaarasan': 46, 'terrenkur': 47, 'assy': 48, 'turgen': 49,
+    'bartogay': 50, 'issyk': 51, 'panfilov': 52,
+  };
 
   // Book Now → passes data to booking page
   const bookParams = new URLSearchParams({
-    tour: tour.id,
+    tour: tour.id[tour.id] || tour.id,
     name: tour.name,
     img: tour.heroImg,
     price: tour.price.replace(',', ''),

@@ -134,7 +134,7 @@ class ApiClient {
     console.error('Register error:', error);
     throw error;
   }
-},
+}
 
   logout() {
     this.token = null;

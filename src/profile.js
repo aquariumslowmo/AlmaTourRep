@@ -178,3 +178,27 @@ function deleteAccount() {
     window.location.href = 'auth.html';
   }
 }
+
+// ─── Cancel Booking ────────────────────────────────────────────────────
+window.cancelBooking = async function(bookingId) {
+  if (confirm("Are you sure you want to cancel this booking?")) {
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/bookings/${bookingId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        alert("Booking cancelled successfully!");
+        renderBookings(); // refresh list
+      } else {
+        const error = await response.json();
+        alert(error.detail || "Failed to cancel");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error canceling booking");
+    }
+  }
+};

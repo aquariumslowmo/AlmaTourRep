@@ -11,7 +11,7 @@ const dateStr      = params.get('date')    || '—';
 const addonTotal   = parseInt(params.get('addons') || '0', 10);
 const addonNames   = (params.get('addonNames') || '').split(',').filter(Boolean);
  
-const base  = tourPrice;
+const base  = tourPrice * guests;
 const total = base + addonTotal;
  
 const MONTHS = ['January','February','March','April','May','June',

@@ -211,11 +211,15 @@ async function createBooking() {
 
       const payParams = new URLSearchParams({
         booking_id: response.booking_id,
-        tour: rawTourId,
-        name: tourName,
-        img: tourImg,
-        price: response.total_price,
-        guests: guests,
+          tour: rawTourId,
+          name: tourName,
+          img: tourImg,
+          price: tourPrice,
+          guests: guests,
+          addons: addonTotal,
+          date: selectedDate ? `${MONTHS[selectedDate.m].slice(0,3)} ${selectedDate.d}, ${selectedDate.y}` : '',
+          start: tourStart,
+          meeting: tourMeeting,
       });
 
       setTimeout(() => {

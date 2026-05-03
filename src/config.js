@@ -11,6 +11,7 @@ const API_CONFIG = {
 
     CREATE_BOOKING: "/bookings",
     MY_BOOKINGS: "/bookings/me",
+    CANCEL_BOOKING: (id) => `/bookings/${id}`,
 
     H3_ANALYTICS: "/analytics/h3",
 
@@ -172,6 +173,10 @@ class ApiClient {
     return this.get(this.config.ENDPOINTS.MY_BOOKINGS);
   }
 
+  async cancelBooking(bookingId) {
+    return this.delete(this.config.ENDPOINTS.CANCEL_BOOKING(bookingId));
+  }
+
   async getH3Analytics() {
     return this.get(this.config.ENDPOINTS.H3_ANALYTICS);
   }
@@ -185,4 +190,3 @@ const api = new ApiClient();
 window.API_CONFIG = API_CONFIG;
 window.ApiClient = ApiClient;
 window.api = api;
-

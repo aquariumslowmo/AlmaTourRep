@@ -9,7 +9,3 @@ function handleSend() {
 
 }
  
-// Allow Enter key to submit (Ctrl+Enter in textarea)
-// document.getElementById('contactMsg').addEventListener('keydown', e => {
-//   if (e.key === 'Enter' && e.ctrlKey) handleSend();
-// });

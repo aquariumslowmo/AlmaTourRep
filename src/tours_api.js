@@ -21,6 +21,36 @@
   const searchInput = document.querySelector('.search-input input');
   const priceRange = document.querySelector('input[type="range"]');
   const typeCheckboxes = document.querySelectorAll('.filter-group:nth-of-type(4) input[type="checkbox"]');
+  const durationCheckboxes = document.querySelectorAll('input[data-hours-min]');
+  const priceMaxLabel = document.getElementById('priceMax');
+  const starBtns = document.querySelectorAll('.star-btn');
+  const ratingLabel = document.getElementById('ratingLabel');
+  let minRating = 0;
+ 
+  // Live price label update
+  if (priceRange && priceMaxLabel) {
+    priceRange.addEventListener('input', () => {
+      priceMaxLabel.textContent = `${parseInt(priceRange.value, 10).toLocaleString()} ₸`;
+    });
+  }
+ 
+  // Star rating UI
+  starBtns.forEach((star) => {
+    star.addEventListener('click', () => {
+      const clicked = parseFloat(star.dataset.rating);
+      if (minRating === clicked) {
+        minRating = 0;
+        starBtns.forEach((s) => s.classList.remove('active'));
+        if (ratingLabel) ratingLabel.textContent = '& up';
+      } else {
+        minRating = clicked;
+        starBtns.forEach((s) => {
+          s.classList.toggle('active', parseFloat(s.dataset.rating) <= clicked);
+        });
+        if (ratingLabel) ratingLabel.textContent = `${clicked}+ & up`;
+      }
+    });
+  });
 
   function escapeHtml(value) {
     return String(value ?? '')
@@ -222,12 +252,33 @@
       .filter((cb) => cb.checked)
       .map((cb) => cb.parentElement.textContent.trim().toLowerCase());
 
+    // Duration: collect selected hour ranges [{min, max}, ...]
+    const checkedHourRanges = Array.from(durationCheckboxes)
+      .filter((cb) => cb.checked)
+      .map((cb) => ({ min: parseInt(cb.dataset.hoursMin, 10), max: parseInt(cb.dataset.hoursMax, 10) }));
+
     filteredTours = allTours.filter((tour) => {
+      // Price filter (now starts from actual min)
       if (Number(tour.price) > maxPrice) return false;
 
+      // Type filter
       const tourType = String(tour.badge || '').trim().toLowerCase();
       if (checkedTypes.length > 0 && !checkedTypes.includes(tourType)) return false;
 
+      // Hours filter
+      if (checkedHourRanges.length > 0) {
+        const hours = Number(tour.duration_hours) || 0;
+        const inRange = checkedHourRanges.some((r) => hours >= r.min && hours <= r.max);
+        if (!inRange) return false;
+      }
+
+      // Rating filter
+      if (minRating > 0) {
+        const tourRating = Number(tour.rating) || 0;
+        if (tourRating < minRating) return false;
+      }
+
+      // Search filter
       if (searchTerm) {
         const title = String(tour.title || '').toLowerCase();
         const desc = String(tour.description || '').toLowerCase();
@@ -264,16 +315,25 @@
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       if (priceRange) priceRange.value = priceRange.max || 35000;
+      if (priceMaxLabel) priceMaxLabel.textContent = '35,000 ₸';
       Array.from(typeCheckboxes).forEach((cb) => (cb.checked = false));
+      Array.from(durationCheckboxes).forEach((cb) => (cb.checked = false));
+      minRating = 0;
+      starBtns.forEach((s) => s.classList.remove('active'));
+      if (ratingLabel) ratingLabel.textContent = '& up';
       if (searchInput) searchInput.value = '';
       applyFilters();
     });
   }
 
+  // Live search on every keystroke
   if (searchInput) {
-    searchInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') applyFilters();
-    });
+    searchInput.addEventListener('input', applyFilters);
+  }
+
+  // Live price filter as slider moves
+  if (priceRange) {
+    priceRange.addEventListener('input', applyFilters);
   }
 
   const quickBookBtn = document.querySelector('.quick-book');
@@ -281,4 +341,3 @@
 
   await loadTours();
 })();
-

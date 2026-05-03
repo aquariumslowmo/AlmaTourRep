@@ -9,6 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tours.css">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .star-btn { cursor: pointer; font-size: 1.2rem; color: #d1d5db; transition: color 0.15s; }
+    .star-btn.active { color: #f59e0b; }
+    #ratingLabel { font-size: 0.85rem; color: #6b7280; margin-left: 4px; }
+  </style>
 </head>
 <body>
   <nav class="top-nav">
@@ -56,18 +61,25 @@
         <h3>Filters</h3>
         <div class="filter-group">
           <div class="filter-title">Price range</div>
-          <div class="range-row"><span>15,000 ₸</span><span>35,000 ₸</span></div>
-          <input type="range" min="15000" max="35000" value="32000">
+          <div class="range-row"><span>5,000 ₸</span><span id="priceMax">35,000 ₸</span></div>
+          <input type="range" min="5000" max="35000" value="35000" id="priceRange">
         </div>
         <div class="filter-group">
           <div class="filter-title">Duration</div>
-          <label><input type="checkbox"> 1 day</label>
-          <label><input type="checkbox"> 2 days</label>
-          <label><input type="checkbox"> 3 days</label>
+          <label><input type="checkbox" data-hours-min="1" data-hours-max="4"> Up to 4 hours</label>
+          <label><input type="checkbox" data-hours-min="5" data-hours-max="6"> 5–6 hours</label>
+          <label><input type="checkbox" data-hours-min="7" data-hours-max="24"> 7+ hours</label>
         </div>
         <div class="filter-group">
           <div class="filter-title">Rating</div>
-          <div class="stars">★ ★ ★ ★ ★ <span>&amp; up</span></div>
+          <div class="stars" id="ratingFilter">
+            <span class="star-btn" data-rating="4.3">★</span>
+            <span class="star-btn" data-rating="4.5">★</span>
+            <span class="star-btn" data-rating="4.6">★</span>
+            <span class="star-btn" data-rating="4.7">★</span>
+            <span class="star-btn" data-rating="4.8">★</span>
+            <span id="ratingLabel">&amp; up</span>
+          </div>
         </div>
         <div class="filter-group">
           <div class="filter-title">Type</div>

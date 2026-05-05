@@ -313,5 +313,21 @@ async function renderBookings() {
     grid.innerHTML = '<div class="empty-state"><p>Failed to load bookings. Please try again.</p></div>';
   }
 }
- 
+// ── Logout ────────────────────────────────────────────────────────────────────
+function logout() {
+  localStorage.removeItem('almatour_token');
+  localStorage.removeItem('almatour_user');
+  localStorage.removeItem('almatour_session');
+  localStorage.removeItem('almaTour_session');
+  localStorage.removeItem('almaTour_users');
+  window.location.href = 'auth.html';
+}
+
+// ── Delete account ────────────────────────────────────────────────────────────
+function deleteAccount() {
+  if (confirm('Are you sure? This will permanently delete your account and all bookings.')) {
+    logout();
+  }
+}
+
 renderBookings();

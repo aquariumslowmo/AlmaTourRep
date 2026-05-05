@@ -10,6 +10,7 @@ const tourId = slugToDbId[rawTourId] || parseInt(rawTourId, 10) || 0;
 const tourName = params.get('name')     || 'Tour';
 const tourImg  = params.get('img')      || '';
 const tourPrice = parseInt(params.get('price') || '0', 10);
+const pricePerPerson = Math.round(tourPrice / 1);
 const tourDuration = params.get('duration') || '—';
 const tourStart    = params.get('start')    || '—';
 const tourMeeting  = params.get('meeting')  || '—';
@@ -131,6 +132,8 @@ function toggleCalendar() {
   const wrap = document.getElementById('calendarWrap');
   wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
 }
+window.toggleCalendar = toggleCalendar;
+
  
 renderCalendar();
  
@@ -143,6 +146,7 @@ function changeGuests(delta) {
   document.getElementById('guestPlus').disabled  = guests >= 8;
   updatePrice();
 }
+window.changeGuests = changeGuests;
  
 // ── Add-ons ───────────────────────────────────────────────────────
 function toggleAddon(el, price) {
@@ -154,6 +158,7 @@ function toggleAddon(el, price) {
     }, 0);
   updatePrice();
 }
+window.toggleAddon = toggleAddon;
  
 // ── Price update ──────────────────────────────────────────────────
 function updatePrice() {
@@ -194,6 +199,7 @@ function proceedToPayment() {
   // Create booking via API
   createBooking();
 }
+window.proceedToPayment = proceedToPayment;
 
 async function createBooking() {
   try {

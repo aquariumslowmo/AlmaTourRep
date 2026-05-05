@@ -212,3 +212,21 @@ html, body {
   .auth-left { display: none; }
   .auth-right { padding: 40px 24px; }
 }
+
+.pw-wrap { position: relative; }
+  .pw-wrap .form-input { padding-right: 42px; }
+  .pw-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color .2s;
+  }
+  .pw-toggle:hover { color: var(--text); }

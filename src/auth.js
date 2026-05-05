@@ -121,3 +121,11 @@ document.addEventListener('keydown', e => {
   else handleRegister();
 });
 
+function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    btn.querySelector('.eye-icon').style.display = isHidden ? 'none' : '';
+    btn.querySelector('.eye-off-icon').style.display = isHidden ? '' : 'none';
+  }
+
